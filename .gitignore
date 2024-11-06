@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Configuration files with sensitive data
+/src/main/resources/application.properties
