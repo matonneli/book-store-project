@@ -13,12 +13,12 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer bookId;
-    private String name;
+    private String title;
     private Integer authorId;
     private String description;
     private LocalDateTime publicationDate;
-    private Integer purchasePrice;
-    private Integer rentalPrice;
+    private Double purchasePrice;
+    private Double rentalPrice;
     private Integer stockQuantity;
     // Getters and Setters
     public Integer getBookId() {
@@ -29,12 +29,12 @@ public class Book {
         this.bookId = bookId;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String name) {
+        this.title = name;
     }
 
     public Integer getAuthorId() {
@@ -61,19 +61,19 @@ public class Book {
         this.publicationDate = publicationDate;
     }
 
-    public Integer getPurchasePrice() {
+    public Double getPurchasePrice() {
         return purchasePrice;
     }
 
-    public void setPurchasePrice(Integer purchasePrice) {
+    public void setPurchasePrice(Double purchasePrice) {
         this.purchasePrice = purchasePrice;
     }
 
-    public Integer getRentalPrice() {
+    public Double getRentalPrice() {
         return rentalPrice;
     }
 
-    public void setRentalPrice(Integer rentalPrice) {
+    public void setRentalPrice(Double rentalPrice) {
         this.rentalPrice = rentalPrice;
     }
 

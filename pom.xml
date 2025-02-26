@@ -6,7 +6,6 @@
     <artifactId>book-store-project</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-
     <modules>
         <module>backend</module>
     </modules>
