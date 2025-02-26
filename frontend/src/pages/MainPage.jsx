@@ -16,6 +16,7 @@ function MainPage() {
                 headers: {
                     'Authorization': `Bearer ${authToken}`,
                 },
+                cache: 'no-store',
             });
 
             if (!response.ok) {
