@@ -1,15 +1,12 @@
 package com.example.bookstore.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Book {
-    // Columns
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer bookId;
@@ -20,6 +17,13 @@ public class Book {
     private Double purchasePrice;
     private Double rentalPrice;
     private Integer stockQuantity;
+    private String status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    //api needed
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    private List<BookImage> images;
     // Getters and Setters
     public Integer getBookId() {
         return bookId;
@@ -83,5 +87,36 @@ public class Book {
 
     public void setStockQuantity(Integer quantity) {
         this.stockQuantity = quantity;
+    }
+
+    public String getStatus() {return status;}
+
+    public void setStatus(String status) {this.status = status;}
+
+    public LocalDateTime getCreatedAt() {return createdAt;}
+
+    public void setCreatedAt(LocalDateTime createdAt) {this.createdAt = createdAt;}
+
+    public LocalDateTime getUpdatedAt() {return updatedAt;}
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {this.updatedAt = updatedAt;}
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public List<BookImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<BookImage> images) {
+        this.images = images;
     }
 }

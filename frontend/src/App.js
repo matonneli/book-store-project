@@ -7,13 +7,14 @@ import AdminLoginForm from './components/AdminLoginForm';
 import MainPage from './pages/MainPage';
 import UserRegisterForm from "./components/UserRegisterForm";
 import RegistrationSuccessPage from "./pages/RegistrationSuccessPage";
+import BookCatalogPage from "./pages/BookCatalogPage";
 
 function App() {
     return (
         <AuthProvider>
             <Router>
                 <Routes>
-                    <Route path="/" element={<HomePage />} />
+                    <Route path="/" element={<BookCatalogPage />} />
                     <Route path="/login/user" element={<UserLoginForm />} />
                     <Route path="/register/user" element={<UserRegisterForm />} />
                     <Route path="/login/admin" element={<AdminLoginForm />} />

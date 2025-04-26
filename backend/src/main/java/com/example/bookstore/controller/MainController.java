@@ -25,10 +25,10 @@ public class MainController {
     @GetMapping("/test")
     @ResponseBody
     public String test(){
-        List<Book> books = bookService.getAllBooks();
-        List<Client> users = clientService.getAllClients();
-        System.out.println(books.get(0).getTitle());
-        System.out.println(users.get(0).getUserId());
+        //List<Book> books = bookService.getAllBooks();
+        //<Client> users = clientService.getAllClients();
+        //System.out.println(books.get(0).getTitle());
+        //System.out.println(users.get(0).getUserId());
         String password = "password123";
         String hashedPassword = PasswordUtils.hashPassword(password);
         if (PasswordUtils.checkPassword(password, hashedPassword)) {
