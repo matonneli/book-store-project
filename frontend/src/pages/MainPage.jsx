@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -6,12 +6,13 @@ function MainPage() {
     const [userData, setUserData] = useState({ firstName: '', lastName: '' });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+
     const { authToken, logout } = useAuth();
     const navigate = useNavigate();
 
-    const fetchUserData = async () => {
+    const fetchUserData = useCallback(async () => {
         try {
-            const response = await fetch('http://localhost:8081/api/user/me', {
+            const response = await fetch('/api/user/me', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${authToken}`,
@@ -34,28 +35,26 @@ function MainPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [authToken]);
 
     useEffect(() => {
         if (!authToken) {
             navigate('/login/user');
         } else {
-            const loadData = async () => {
-                try {
-                    await fetchUserData();
-                } catch (err) {
-                    console.error('Failed to fetch user data:', err);
-                }
-            };
-
-            loadData();
+            fetchUserData();
         }
-    }, [authToken, navigate]);
+    }, [authToken, navigate, fetchUserData]);
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login/user');
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/logout-success');
+        } catch (err) {
+            console.error('Logout error:', err);
+            setError('Logout failed.');
+        }
     };
+
 
     if (loading) {
         return <p>Loading...</p>;

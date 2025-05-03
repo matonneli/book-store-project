@@ -2,6 +2,7 @@ package com.example.bookstore.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class Book {
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private BigDecimal discountPercent;
 
     //api needed
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
@@ -118,5 +120,13 @@ public class Book {
 
     public void setImages(List<BookImage> images) {
         this.images = images;
+    }
+
+    public BigDecimal getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(BigDecimal discountPercent) {
+        this.discountPercent = discountPercent;
     }
 }

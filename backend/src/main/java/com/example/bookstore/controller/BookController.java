@@ -21,8 +21,31 @@ public class BookController {
     }
 
     @GetMapping("/books")
-    public ResponseEntity<List<BookDto>> getAllBooks() {
-        List<BookDto> books = bookService.getAllBooksForCatalog();
+    public ResponseEntity<List<BookDto>> getBooks(
+            @RequestParam(required = false) List<Integer> genres,
+            @RequestParam(required = false) List<Integer> categories,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String sort
+    ) {
+        List<BookDto> books = bookService.getBooks(genres, categories, title, sort);
+        return ResponseEntity.ok(books);
+    }
+
+    @GetMapping("/books/discounts")
+    public ResponseEntity<List<BookDto>> getDiscountedBooks() {
+        List<BookDto> books = bookService.getDiscountedBooks();
+        return ResponseEntity.ok(books);
+    }
+
+    @GetMapping("/books/new")
+    public ResponseEntity<List<BookDto>> getNewBooks() {
+        List<BookDto> books = bookService.getNewBooks();
+        return ResponseEntity.ok(books);
+    }
+
+    @GetMapping("/books/bestsellers")
+    public ResponseEntity<List<BookDto>> getBestsellers() {
+        List<BookDto> books = bookService.getBestsellers();
         return ResponseEntity.ok(books);
     }
 

@@ -1,5 +1,6 @@
 package com.example.bookstore.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,10 @@ public class BookDto {
     private Double purchasePrice;
     private Double rentalPrice;
     private List<String> imageUrls = new ArrayList<>();
+    private List<String> genres = new ArrayList<>();
+    private List<String> categories = new ArrayList<>();
+
+    private BigDecimal discountPercent;
 
     public Integer getBookId() {
         return bookId;
@@ -76,5 +81,29 @@ public class BookDto {
 
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
+    }
+
+    public List<String> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<String> genres) {
+        this.genres = genres;
+    }
+
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
+    }
+
+    public BigDecimal getDiscountPercent() {
+        return discountPercent;
+    }
+
+    public void setDiscountPercent(BigDecimal discountPercent) {
+        this.discountPercent = discountPercent;
     }
 }

@@ -1,101 +1,134 @@
-// pages/BookCatalogPage.jsx
 import React, { useState, useEffect } from 'react';
+import { CatalogProvider } from '../contexts/CatalogContext';
+import BookFilter from '../components/BookFilter';
+import BookList from '../components/BookList';
 
-// Reusable BookCard component
-const BookCard = ({ book }) => {
-    const coverImage = book.imageUrls && book.imageUrls.length > 0
-        ? book.imageUrls[0]
-        : "https://via.placeholder.com/300x450?text=No+Image";
-
-    return (
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col">
-            <div className="h-72 bg-gray-100 flex items-center justify-center px-4 py-4 group shadow-md group-hover:shadow-xl transition-shadow duration-300 ease-in-out rounded-t-2xl">
-                <img
-                    src={coverImage}
-                    alt={book.title}
-                    className="max-h-full max-w-full object-contain rounded-md shadow transition-transform duration-300 ease-in-out group-hover:scale-105"
-                />
-            </div>
-
-            <div className="p-4 flex-1 flex flex-col">
-                <h3 className="text-xl font-semibold mb-1">{book.title}</h3>
-                <p className="text-gray-500 text-sm mb-2">By {book.authorName}</p>
-                <p className="text-gray-600 text-sm flex-1 mb-4">
-                    {book.description && book.description.length > 100
-                        ? `${book.description.substring(0, 100)}...`
-                        : book.description}
-                </p>
-                <div className="mt-auto flex space-x-2">
-                    <button
-                        className="flex-1 py-2 rounded-full bg-blue-500 text-white font-semibold hover:bg-blue-600 transition-colors duration-200 shadow"
-                    >
-                        Buy (from {book.purchasePrice} zł)
-                    </button>
-                    <button
-                        className="flex-1 py-2 rounded-full bg-green-500 text-white font-semibold hover:bg-green-600 transition-colors duration-200 shadow"
-                    >
-                        Rent (from {(book.rentalPrice*7).toFixed(2)} zł)
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
-
-
-// Main catalog page
 const BookCatalogPage = () => {
     const [books, setBooks] = useState([]);
+    const [genres, setGenres] = useState([]);
+    const [categories, setCategories] = useState([]);
+
+    // Local filter state before applying
+    const [filterState, setFilterState] = useState({ genres: [], categories: [], sort: 'asc' });
+    // Applied filters used for fetching
+    const [appliedFilters, setAppliedFilters] = useState({ genres: [], categories: [], sort: 'asc' });
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [customEndpoint, setCustomEndpoint] = useState(null);
+    const [pageTitle, setPageTitle] = useState('Book Catalog');
 
+    // Fetch genres & categories once
     useEffect(() => {
-        const fetchBooks = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch('/api/catalog/books');
-                if (!response.ok) throw new Error('Failed to fetch books');
-                const data = await response.json();
-                setBooks(data);
-                setError(null);
-            } catch (err) {
-                setError(err.message);
-                console.error('Error fetching books:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchBooks();
+        Promise.all([
+            fetch('/api/genres/').then(r => r.json()),
+            fetch('/api/categories/').then(r => r.json())
+        ])
+            .then(([gData, cData]) => {
+                setGenres(gData);
+                setCategories(cData);
+            })
+            .catch(err => setError(err.message));
     }, []);
 
+    // Fetch books whenever appliedFilters change or a customEndpoint is set
+    useEffect(() => {
+        setLoading(true);
+
+        let url;
+        if (customEndpoint) {
+            url = customEndpoint;
+        } else {
+            const params = new URLSearchParams();
+            appliedFilters.genres.forEach(id => params.append('genres', id));
+            appliedFilters.categories.forEach(id => params.append('categories', id));
+            if (appliedFilters.sort) params.set('sort', appliedFilters.sort);
+            url = `/api/catalog/books?${params.toString()}`;
+        }
+
+        fetch(url)
+            .then(r => {
+                if (!r.ok) {
+                    throw new Error(`HTTP error! Status: ${r.status}`);
+                }
+                return r.json();
+            })
+            .then(data => setBooks(data))
+            .catch(err => {
+                console.error('Error fetching books:', err);
+                setError(err.message);
+            })
+            .finally(() => setLoading(false));
+    }, [appliedFilters, customEndpoint]);
+
+    const applyFilters = () => {
+        // Reset any special category view when applying regular filters
+        setCustomEndpoint(null);
+        setPageTitle('Book Catalog');
+        setAppliedFilters(filterState);
+    };
+
+    const handleSpecialCategoryClick = (endpoint, categoryName) => {
+        // Reset regular filters when selecting a special category
+        setFilterState({ genres: [], categories: [], sort: 'asc' });
+        setAppliedFilters({ genres: [], categories: [], sort: 'asc' });
+
+        // Set the custom endpoint and update the page title
+        setCustomEndpoint(endpoint);
+        setPageTitle(categoryName.split(' ').slice(1).join(' ')); // Remove emoji from title
+    };
+
+    const resetToMainCatalog = () => {
+        setCustomEndpoint(null);
+        setPageTitle('Book Catalog');
+        setFilterState({ genres: [], categories: [], sort: 'asc' });
+        setAppliedFilters({ genres: [], categories: [], sort: 'asc' });
+    };
+
+    if (loading && !books.length) return <div className="text-center p-8">Loading…</div>;
+    if (error) return <div className="text-red-600 p-4">Error: {error}</div>;
+
     return (
-        <div className="container mx-auto px-6 py-8">
-            <h1 className="text-3xl font-bold mb-6">Book Catalog</h1>
-
-            {loading && (
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-                </div>
-            )}
-
-            {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <strong className="font-bold">Error!</strong>
-                    <span className="block sm:inline"> {error}</span>
-                </div>
-            )}
-
-            {!loading && !error && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {books && books.length > 0 ? (
-                        books.map(book => <BookCard key={book.bookId} book={book} />)
-                    ) : (
-                        <p className="text-gray-500">No books available.</p>
+        <CatalogProvider>
+            <div className="container mx-auto px-6 py-8 flex">
+                <div className="w-1/5 bg-white">
+                    <BookFilter
+                        allGenres={genres}
+                        allCategories={categories}
+                        filterState={filterState}
+                        setFilterState={setFilterState}
+                        onSpecialCategoryClick={handleSpecialCategoryClick}
+                    />
+                    <button
+                        onClick={applyFilters}
+                        className="mt-4 w-full bg-[#ffbdb1] text-gray-800 font-medium px-4 py-2 rounded-full hover:bg-[#ff9c8b]"
+                        disabled={customEndpoint !== null}
+                    >
+                        Apply Filters
+                    </button>
+                    {customEndpoint && (
+                        <button
+                            onClick={resetToMainCatalog}
+                            className="mt-2 w-full bg-[#f5f3ff] text-[#4c1d95] font-medium px-4 py-2 rounded-full border border-[#ddd6fe] hover:bg-[#ddd6fe]"
+                        >
+                            Back to Main Catalog
+                        </button>
                     )}
                 </div>
-            )}
-        </div>
+
+                <div className="w-4/5 pl-8">
+                    <h1 className="text-4xl font-extrabold mb-8 text-center">{pageTitle}</h1>
+                    {loading ? (
+                        <div className="text-center p-8">
+                            <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#321d4f]"></div>
+                            <p className="mt-2 text-[#4a4a4a]">Loading books...</p>
+                        </div>
+                    ) : (
+                        <BookList books={books} />
+                    )}
+                </div>
+            </div>
+        </CatalogProvider>
     );
 };
 
