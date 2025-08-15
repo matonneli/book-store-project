@@ -30,7 +30,7 @@ public class BookImage {
         return book;
     }
 
-    public void setBook(Book bookId) {
+    public void setBook(Book book) {
         this.book= book;
     }
 

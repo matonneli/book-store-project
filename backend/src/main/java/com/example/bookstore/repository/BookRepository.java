@@ -1,5 +1,7 @@
 package com.example.bookstore.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.bookstore.model.Book;
@@ -25,10 +27,11 @@ public interface BookRepository extends JpaRepository<Book, Integer>{
     )
   ORDER BY b.purchasePrice ASC
 """)
-    List<Book> findFilteredSortedAsc(
+    Page<Book> findFilteredSortedAsc(
             @Param("genreIds")   List<Integer> genreIds,
             @Param("categoryIds")List<Integer> categoryIds,
-            @Param("pattern")    String pattern
+            @Param("pattern")    String pattern,
+            Pageable pageable
     );
 
     @Query("""
@@ -46,10 +49,11 @@ public interface BookRepository extends JpaRepository<Book, Integer>{
     )
   ORDER BY b.purchasePrice DESC
 """)
-    List<Book> findFilteredSortedDesc(
+    Page<Book> findFilteredSortedDesc(
             @Param("genreIds")   List<Integer> genreIds,
             @Param("categoryIds")List<Integer> categoryIds,
-            @Param("pattern")    String pattern
+            @Param("pattern")    String pattern,
+            Pageable pageable
     );
 
     @Query("""
@@ -58,7 +62,7 @@ public interface BookRepository extends JpaRepository<Book, Integer>{
   WHERE b.discountPercent > 0
   ORDER BY b.purchasePrice DESC
 """)
-    List<Book> findDiscountedBooks();
+    Page<Book> findDiscountedBooks(Pageable pageable);
 
     @Query("""
   SELECT DISTINCT b
@@ -66,7 +70,7 @@ public interface BookRepository extends JpaRepository<Book, Integer>{
   WHERE b.updatedAt >= :oneMonthAgo
   ORDER BY b.updatedAt DESC
 """)
-    List<Book> findNewBooks(@Param("oneMonthAgo") LocalDateTime oneMonthAgo);
+    Page<Book> findNewBooks(@Param("oneMonthAgo") LocalDateTime oneMonthAgo, Pageable pageable);
 
     @Query("""
   SELECT DISTINCT b
@@ -75,5 +79,11 @@ public interface BookRepository extends JpaRepository<Book, Integer>{
   WHERE bc.categoryId = 3
   ORDER BY b.purchasePrice DESC
 """)
-    List<Book> findBestsellers();
+    Page<Book> findBestsellers(Pageable pageable);
+
+    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.bookId = :bookId")
+    Double getAverageRatingByBookId(@Param("bookId") Integer bookId);
+
+    @Query("SELECT COUNT(r) FROM Review r WHERE r.bookId = :bookId")
+    Integer getTotalReviewsByBookId(@Param("bookId") Integer bookId);
 }

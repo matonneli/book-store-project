@@ -22,7 +22,7 @@ function UserLoginForm() {
             const data = await response.json();
             if (response.ok) {
                 login(data.token);
-                navigate('/main');
+                navigate('/catalog');
             } else {
                 setError(data.message);
             }

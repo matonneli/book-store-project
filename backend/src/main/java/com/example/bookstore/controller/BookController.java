@@ -1,13 +1,14 @@
-// BookController.java
 package com.example.bookstore.controller;
 
 import com.example.bookstore.dto.BookDto;
+import com.example.bookstore.dto.BookDetailDto;
 import com.example.bookstore.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/catalog")
@@ -21,32 +22,19 @@ public class BookController {
     }
 
     @GetMapping("/books")
-    public ResponseEntity<List<BookDto>> getBooks(
+    public ResponseEntity<Map<String, Object>> getBooks(
             @RequestParam(required = false) List<Integer> genres,
             @RequestParam(required = false) List<Integer> categories,
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) String sort
-    ) {
-        List<BookDto> books = bookService.getBooks(genres, categories, title, sort);
-        return ResponseEntity.ok(books);
-    }
+            @RequestParam(required = false, defaultValue = "asc") String sort,
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "9") int size) {
 
-    @GetMapping("/books/discounts")
-    public ResponseEntity<List<BookDto>> getDiscountedBooks() {
-        List<BookDto> books = bookService.getDiscountedBooks();
-        return ResponseEntity.ok(books);
-    }
+        if (page < 0) page = 0;
+        if (size < 1 || size > 100) size = 9;
 
-    @GetMapping("/books/new")
-    public ResponseEntity<List<BookDto>> getNewBooks() {
-        List<BookDto> books = bookService.getNewBooks();
-        return ResponseEntity.ok(books);
-    }
-
-    @GetMapping("/books/bestsellers")
-    public ResponseEntity<List<BookDto>> getBestsellers() {
-        List<BookDto> books = bookService.getBestsellers();
-        return ResponseEntity.ok(books);
+        Map<String, Object> result = bookService.getBooks(genres, categories, title, sort, page, size);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/books/{id}")
@@ -57,5 +45,51 @@ public class BookController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/books/{id}/details")
+    public ResponseEntity<BookDetailDto> getBookDetails(@PathVariable Integer id) {
+        BookDetailDto bookDetails = bookService.getBookDetailById(id);
+        if (bookDetails != null) {
+            return ResponseEntity.ok(bookDetails);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/books/discounts")
+    public ResponseEntity<Map<String, Object>> getDiscountedBooks(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "9") int size) {
+
+        if (page < 0) page = 0;
+        if (size < 1 || size > 100) size = 9;
+
+        Map<String, Object> result = bookService.getDiscountedBooks(page, size);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/books/new")
+    public ResponseEntity<Map<String, Object>> getNewBooks(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "9") int size) {
+
+        if (page < 0) page = 0;
+        if (size < 1 || size > 100) size = 9;
+
+        Map<String, Object> result = bookService.getNewBooks(page, size);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/books/bestsellers")
+    public ResponseEntity<Map<String, Object>> getBestsellers(
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "9") int size) {
+
+        if (page < 0) page = 0;
+        if (size < 1 || size > 100) size = 9;
+
+        Map<String, Object> result = bookService.getBestsellers(page, size);
+        return ResponseEntity.ok(result);
     }
 }

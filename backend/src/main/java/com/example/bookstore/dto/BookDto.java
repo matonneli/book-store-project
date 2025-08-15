@@ -13,10 +13,10 @@ public class BookDto {
     private LocalDateTime publicationDate;
     private Double purchasePrice;
     private Double rentalPrice;
+    private Integer stockQuantity;
     private List<String> imageUrls = new ArrayList<>();
     private List<String> genres = new ArrayList<>();
     private List<String> categories = new ArrayList<>();
-
     private BigDecimal discountPercent;
 
     public Integer getBookId() {
@@ -73,6 +73,14 @@ public class BookDto {
 
     public void setRentalPrice(Double rentalPrice) {
         this.rentalPrice = rentalPrice;
+    }
+
+    public Integer getStockQuantity() {
+        return stockQuantity;
+    }
+
+    public void setStockQuantity(Integer stockQuantity) {
+        this.stockQuantity = stockQuantity;
     }
 
     public List<String> getImageUrls() {

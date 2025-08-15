@@ -1,7 +1,7 @@
 // contexts/BookContext.js
 import React, { createContext, useState, useEffect } from 'react';
 
-export const BookContext = createContext();
+export const BookContext = createContext(undefined);
 
 export const BookProvider = ({ children }) => {
     const [books, setBooks] = useState([]);

@@ -1,5 +1,9 @@
 package com.example.bookstore.controller;
 
+import com.example.bookstore.dto.ClientProfileDto;
+import com.example.bookstore.dto.LoginResponseDto;
+import com.example.bookstore.exception.NotFoundException;
+import com.example.bookstore.exception.UnauthorizedException;
 import com.example.bookstore.model.Client;
 import com.example.bookstore.service.ClientService;
 
@@ -21,10 +25,10 @@ public class ClientController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody Client loginClient) {
-        Map<String, String> response = clientService.authenticateUser(loginClient);
+    public ResponseEntity<LoginResponseDto> login(@RequestBody Client loginClient) {
+        LoginResponseDto response = clientService.authenticateUser(loginClient);
 
-        if (response.containsKey("token")) {
+        if (response.getToken() != null) {
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
@@ -56,15 +60,57 @@ public class ClientController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Map<String, Object>> getCurrentUser(@RequestHeader("Authorization") String token) {
-        Map<String, Object> response = clientService.getCurrentUserInfo(token);
-
-        if (response.containsKey("id")) {
-            return ResponseEntity.ok(response);
-        } else if (response.get("message").equals("User not found.")) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String token) {
+        try {
+            ClientProfileDto dto = clientService.getCurrentUserInfo(token);
+            return ResponseEntity.ok(dto);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Unexpected error"));
         }
     }
+
+
+
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUserProfile(@RequestHeader("Authorization") String token, @RequestBody ClientProfileDto updateDto) {
+        try {
+            ClientProfileDto updatedProfile = clientService.updateUser(token, updateDto);
+            return ResponseEntity.ok(updatedProfile);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Unexpected error occurred"));
+        }
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(
+            @RequestHeader("Authorization") String token,
+            @RequestBody Map<String, String> passwords) {
+
+        try {
+            String currentPassword = passwords.get("currentPassword");
+            String newPassword = passwords.get("newPassword");
+
+            clientService.changePassword(token, currentPassword, newPassword);
+
+            return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Password change failed"));
+        }
+    }
+
+
 }

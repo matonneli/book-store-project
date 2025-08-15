@@ -19,6 +19,16 @@ function UserRegisterForm() {
 
     const validateForm = () => {
         const newErrors = {};
+
+        const validatePassword = (password) => {
+            return (
+                /[A-Z]/.test(password) && // at least one uppercase
+                /[a-z]/.test(password) && // at least one lowercase
+                /\d/.test(password) &&    // at least one digit
+                password.length >= 8
+            );
+        };
+
         if (!formData.firstName || formData.firstName.length < 2) {
             newErrors.firstName = 'First name must be at least 2 characters';
         }
@@ -31,12 +41,14 @@ function UserRegisterForm() {
         if (!formData.contactPhone || !/^\+?[0-9]{10,15}$/.test(formData.contactPhone)) {
             newErrors.contactPhone = 'Invalid phone number';
         }
-        if (!formData.password || formData.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
+        if (!validatePassword(formData.password)) {
+            newErrors.password =
+                'Password must be at least 8 characters long and include one uppercase letter, one lowercase letter, and one number';
         }
         if (formData.password !== formData.confirmPassword) {
             newErrors.confirmPassword = 'Passwords do not match';
         }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -52,7 +64,7 @@ function UserRegisterForm() {
 
         setIsSubmitting(true);
         try {
-            const response = await axios.post('/api/user/register', {
+            await axios.post('/api/user/register', {
                 firstName: formData.firstName,
                 lastName: formData.lastName,
                 email: formData.email,

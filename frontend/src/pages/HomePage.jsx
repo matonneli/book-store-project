@@ -1,10 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import bookabeLogo from '../assets/images/bookabe-logo.jpg';
 import manPic from '../assets/images/man2.jpg';
 
 function HomePage() {
     const navigate = useNavigate();
+    const { authToken, logout } = useAuth();
 
     return (
         <div className="h-screen flex" style={{ fontFamily: "'Montserrat', sans-serif" }}>
@@ -49,7 +51,7 @@ function HomePage() {
 
                         <div className="mt-12 flex justify-center">
                             <button
-                                onClick={() => navigate('/catalogue')}
+                                onClick={() => navigate('/catalog')}
                                 className="w-[80%] bg-[#ffbdb1] hover:bg-[#ff9c8b] text-gray-800 font-medium py-4 rounded-full transition"
                             >
                                 Explore
@@ -69,18 +71,40 @@ function HomePage() {
 
             <div className="w-[30%] bg-[#321d4f] relative flex items-center justify-center">
                 <nav className="absolute top-6 right-8 flex space-x-6">
-                    <button
-                        onClick={() => navigate('/login/user')}
-                        className="text-white text-lg font-medium hover:underline px-6 py-2"
-                    >
-                        Sign In
-                    </button>
-                    <button
-                        onClick={() => navigate('/register/user')}
-                        className="bg-[#241736] hover:bg-[#1b1129] text-white text-lg font-semibold px-6 py-3 rounded-full transition"
-                    >
-                        Create Account
-                    </button>
+                    {authToken ? (
+                        <>
+                            <button
+                                onClick={() => navigate('/user')}
+                                className="text-white text-lg font-medium hover:underline px-6 py-2"
+                            >
+                                My Account
+                            </button>
+                            <button
+                                onClick={() => {
+                                    logout();
+                                    navigate('/logout-success');
+                                }}
+                                className="bg-[#241736] hover:bg-[#1b1129] text-white text-lg font-semibold px-6 py-3 rounded-full transition"
+                            >
+                                Log out
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <button
+                                onClick={() => navigate('/login/user')}
+                                className="text-white text-lg font-medium hover:underline px-6 py-2"
+                            >
+                                Sign In
+                            </button>
+                            <button
+                                onClick={() => navigate('/register/user')}
+                                className="bg-[#241736] hover:bg-[#1b1129] text-white text-lg font-semibold px-6 py-3 rounded-full transition"
+                            >
+                                Create Account
+                            </button>
+                        </>
+                    )}
                 </nav>
             </div>
         </div>
