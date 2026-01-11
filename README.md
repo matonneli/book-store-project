@@ -4,19 +4,19 @@ The main idea of ​​the project is to combine the functions of a library and 
 
 ## Technologies used
 Backend: 
- -Java 17
- -Spring Boot (Web, Data JPA, Data Redis, Mail)
+ - Java 17
+ - Spring Boot (Web, Data JPA, Data Redis, Mail)
  
  Security: 
- -JWT (jjwt) 
- -BCrypt
+ - JWT (jjwt) 
+ - BCrypt
 
 Database:
 - PostgreSQL 17 (production)
 - Redis (2FA codes for Admin autentification)
 
 Frontend:
--React(Tailwind CSS, Context API)
+- React (Tailwind CSS, Context API)
 
 ## Structure
 
