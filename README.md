@@ -1,11 +1,12 @@
 ## Description
-This is my Diploma Project for Master Degree of Computer Science in University of Lodz. The topic of diploma project - Web application in form of bookstore/library. 
+This is my Diploma Project for Master Degree of Computer Science in University of Lodz. The topic of the diploma project is a web application for a bookstore/library. 
 The main idea of ​​the project is to combine the functions of a library and a bookstore into a single application with a user-friendly interface and using modern technologies.
 
 ## Technologies used
 Backend: 
  - Java 17
  - Spring Boot (Web, Data JPA, Data Redis, Mail)
+ - Maven for building
  
  Security: 
  - JWT (jjwt) 
@@ -13,14 +14,14 @@ Backend:
 
 Database:
 - PostgreSQL 17 (production)
-- Redis (2FA codes for Admin autentification, Admin session management)
+- Redis (2FA codes for Admin authentication, Admin session management)
 
 Frontend:
-- React (Tailwind CSS, Context API)
+- React (Tailwind CSS, Bootstrap, Context API, Hooks, Fetch API, React Router)
 
 ## Structure
 
-- `admin/` - Admin react app.
+- `admin/` - admin react app.
 - `frontend/` — client react app.
-- `backend/` — Backend part of a project.
-- `backend/sql` — Database part of a project.
+- `backend/` — backend part of a project(Spring App).
+- `backend/sql` — Database export (full schema and sample data for import).
