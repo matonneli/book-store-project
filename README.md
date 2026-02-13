@@ -13,14 +13,14 @@ Backend:
 
 Database:
 - PostgreSQL 17 (production)
-- Redis (2FA codes for Admin autentification)
+- Redis (2FA codes for Admin autentification, Admin session management)
 
 Frontend:
 - React (Tailwind CSS, Context API)
 
 ## Structure
 
-- `admin/` - Admin site  
-- `frontend/` — Front-end part of a project, React used.
-- `backend/` — Back-end part of a project, Spring Boot used.
-- `backend/sql` — Database part of a project, PostgreSQL used.
+- `admin/` - Admin react app.
+- `frontend/` — client react app.
+- `backend/` — Backend part of a project.
+- `backend/sql` — Database part of a project.
