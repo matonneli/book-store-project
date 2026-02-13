@@ -86,29 +86,24 @@ const ManageBooksPageContent = () => {
     const [showAddAuthorModal, setShowAddAuthorModal] = useState(false);
     const [showEditAuthorModal, setShowEditAuthorModal] = useState(false);
 
-    // Refs для отслеживания показанных уведомлений
     const thirtyMinWarningShown = useRef(false);
     const fiveMinWarningShown = useRef(false);
 
-    // Проверка времени сессии и показ toast-уведомлений
     useEffect(() => {
         const checkSessionTime = setInterval(() => {
             const timeLeft = getRemainingTime();
             const minutesLeft = Math.floor(timeLeft / 1000 / 60);
 
-            // Уведомление за 30 минут
             if (minutesLeft <= 30 && minutesLeft > 5 && !thirtyMinWarningShown.current) {
                 toast.warning('Your session will expire in 30 minutes. Continue working to automatically extend it.', 8000);
                 thirtyMinWarningShown.current = true;
             }
 
-            // Уведомление за 5 минут
             if (minutesLeft <= 5 && minutesLeft > 0 && !fiveMinWarningShown.current) {
                 toast.error('⚠️ Warning! Your session will expire in 5 minutes. Perform any action to extend the session or log in again.', 10000);
                 fiveMinWarningShown.current = true;
             }
 
-            // Сброс флагов при обновлении активности (когда время увеличилось)
             if (minutesLeft > 30) {
                 thirtyMinWarningShown.current = false;
                 fiveMinWarningShown.current = false;
@@ -116,7 +111,6 @@ const ManageBooksPageContent = () => {
                 fiveMinWarningShown.current = false;
             }
 
-            // Автоматический logout при истечении сессии
             if (timeLeft <= 0) {
                 clearInterval(checkSessionTime);
                 toast.error('Your session has expired. Please log in again.', 5000);
@@ -188,7 +182,7 @@ const ManageBooksPageContent = () => {
             {/* Header */}
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2>📚 Manage Books</h2>
+                    <h2>Manage Books</h2>
                     <p className="text-muted mb-0">Manage your bookstore inventory</p>
                 </div>
                 <button

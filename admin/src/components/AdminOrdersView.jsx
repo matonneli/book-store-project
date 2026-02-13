@@ -21,18 +21,15 @@ const AdminOrdersView = () => {
         email: ''
     });
 
-    // State for expandable order details
     const [expandedOrders, setExpandedOrders] = useState(new Set());
     const [orderDetails, setOrderDetails] = useState({});
     const [loadingDetails, setLoadingDetails] = useState(new Set());
 
-    // State for custom dropdown
     const [openDropdown, setOpenDropdown] = useState(null);
     const [openItemDropdown, setOpenItemDropdown] = useState(null);
     const dropdownRef = useRef(null);
     const itemDropdownRef = useRef(null);
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -49,7 +46,6 @@ const AdminOrdersView = () => {
         };
     }, []);
 
-    // Загружаем заказы при изменении фильтров или активного таба
     useEffect(() => {
         if (!isReady) return;
 
@@ -549,7 +545,6 @@ const AdminOrdersView = () => {
                         </div>
                     </div>
 
-                    {/* Status Filters */}
                     <div className="mb-2">
                         <label className="form-label">Filter by Status:</label>
                         <div className="d-flex flex-wrap gap-2">
@@ -565,7 +560,6 @@ const AdminOrdersView = () => {
                         </div>
                     </div>
 
-                    {/* Sort Direction */}
                     <div>
                         <label className="form-label">Sort by Date:</label>
                         <button className="btn btn-sm btn-outline-secondary" onClick={handleSortToggle}>
@@ -575,7 +569,6 @@ const AdminOrdersView = () => {
                 </div>
             </div>
 
-            {/* Orders Table */}
             <div className="card">
                 <div className="card-header d-flex justify-content-between align-items-center">
                     <h5 className="mb-0">

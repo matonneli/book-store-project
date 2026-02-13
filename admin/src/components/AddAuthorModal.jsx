@@ -26,7 +26,6 @@ const AddAuthorModal = ({ show, onClose, onAuthorAdded }) => {
             [name]: value,
         }));
 
-        // Очищаем ошибку для этого поля при изменении
         if (validationErrors[name]) {
             setValidationErrors((prev) => {
                 const newErrors = { ...prev };
@@ -39,14 +38,12 @@ const AddAuthorModal = ({ show, onClose, onAuthorAdded }) => {
     const validateForm = () => {
         const errors = {};
 
-        // Full Name validation
         if (!formData.fullName || formData.fullName.trim() === '') {
             errors.fullName = 'Author name cannot be empty';
         } else if (formData.fullName.trim().length > 255) {
             errors.fullName = 'Author name must be less than 256 characters';
         }
 
-        // Description validation
         if (formData.description && formData.description.length > 2000) {
             errors.description = 'Description must be less than 2001 characters';
         }
@@ -57,7 +54,6 @@ const AddAuthorModal = ({ show, onClose, onAuthorAdded }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Валидация формы
         const errors = validateForm();
         if (Object.keys(errors).length > 0) {
             setValidationErrors(errors);
@@ -89,7 +85,6 @@ const AddAuthorModal = ({ show, onClose, onAuthorAdded }) => {
                     const errorData = await response.json();
                     errorMessage = errorData.message || errorMessage;
                 } catch {
-                    // ignore
                 }
 
                 if (response.status === 401) {
@@ -101,22 +96,16 @@ const AddAuthorModal = ({ show, onClose, onAuthorAdded }) => {
 
             const createdAuthor = await response.json();
 
-            // Очищаем форму
             setFormData({
                 fullName: '',
                 description: '',
             });
 
-            // Добавляем автора в контекст
             addAuthor(createdAuthor);
 
-            // Вызываем callback если передан
             if (onAuthorAdded) {
                 onAuthorAdded(createdAuthor);
             }
-
-            // Показываем toast (если используется из ManageBooksPage с ToastProvider)
-            // toast уже будет вызван в handleAuthorAdded в ManageBooksPage
 
             onClose();
 
@@ -128,7 +117,6 @@ const AddAuthorModal = ({ show, onClose, onAuthorAdded }) => {
     };
 
     const handleClose = () => {
-        // Очищаем форму и ошибки при закрытии
         setFormData({
             fullName: '',
             description: '',

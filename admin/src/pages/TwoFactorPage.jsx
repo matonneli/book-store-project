@@ -32,7 +32,7 @@ const TwoFactorPage = () => {
             const data = await response.json();
 
             if (response.ok) {
-                await checkAuthStatus(); // подтягиваем реальное состояние с сервера
+                await checkAuthStatus();
                 navigate('/dashboard');
                 setCode('');
             } else {

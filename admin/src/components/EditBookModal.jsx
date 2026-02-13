@@ -313,7 +313,6 @@ const EditBookModal = ({ bookId, show, onClose, onBookUpdated }) => {
                     <Alert variant="danger">{error}</Alert>
                 ) : (
                     <Form>
-                        {/* Basic Information */}
                         <div className="border rounded p-3 mb-4 bg-light">
                             <h6 className="mb-3">Basic Information</h6>
 
@@ -379,7 +378,6 @@ const EditBookModal = ({ bookId, show, onClose, onBookUpdated }) => {
                             </Form.Group>
                         </div>
 
-                        {/* Pricing & Stock */}
                         <div className="border rounded p-3 mb-4 bg-light">
                             <h6 className="mb-3">Pricing & Stock</h6>
 
@@ -454,7 +452,6 @@ const EditBookModal = ({ bookId, show, onClose, onBookUpdated }) => {
                             </div>
                         </div>
 
-                        {/* Image & Status */}
                         <div className="border rounded p-3 mb-4 bg-light">
                             <h6 className="mb-3">Image & Status</h6>
 
@@ -494,11 +491,9 @@ const EditBookModal = ({ bookId, show, onClose, onBookUpdated }) => {
                             </div>
                         </div>
 
-                        {/* Categories & Genres */}
                         <div className="border rounded p-3 mb-0 bg-light">
                             <h6 className="mb-3">Categories & Genres</h6>
 
-                            {/* Categories with Genres */}
                             {categorizedData.categoriesWithGenres.length > 0 && (
                                 <div className="mb-4">
                                     <div className="fw-bold mb-2 text-primary">Categories with Genres:</div>
@@ -525,7 +520,6 @@ const EditBookModal = ({ bookId, show, onClose, onBookUpdated }) => {
                                 </div>
                             )}
 
-                            {/* Standalone Categories */}
                             {categorizedData.standaloneCategories.length > 0 && (
                                 <div>
                                     <div className="fw-bold mb-2 text-primary">Standalone Categories:</div>
@@ -559,7 +553,6 @@ const EditBookModal = ({ bookId, show, onClose, onBookUpdated }) => {
                                 </div>
                             )}
 
-                            {/* Selection Summary */}
                             <div className="mt-3 pt-3 border-top">
                                 <small className="text-muted">
                                     <strong>Selected:</strong>{' '}

@@ -24,12 +24,10 @@ function App() {
                             <div className="min-vh-100 bg-light">
                                 <Routes>
                                     <Route path="/" element={<Navigate to="/login" replace />} />
-
-                                    {/* Auth routes */}
+                                    
                                     <Route path="/login" element={<LoginPage />} />
                                     <Route path="/2fa" element={<TwoFactorPage />} />
 
-                                    {/* Protected admin routes */}
                                     <Route
                                         path="/dashboard"
                                         element={

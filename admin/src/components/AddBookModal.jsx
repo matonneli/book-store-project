@@ -1,4 +1,3 @@
-// src/components/AddBookModal.jsx
 import React, { useState, useMemo } from 'react';
 import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap';
 import { useToast } from './ToastSystem';
@@ -12,7 +11,7 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
     const { authors, allCategories, allGenres, tree } = useReferences();
     const { fetchBooks } = useBookAdmin();
 
-    const [loading] = useState(false); // оставляем для совместимости с Edit, хотя здесь не используется
+    const [loading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
@@ -36,7 +35,7 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
         const categoryIdsInTree = new Set(tree.map(item => item.categoryId));
         const categoriesWithGenres = tree.map(item => ({
             categoryId: item.categoryId,
-            categoryName: item.categoryName || item.name, // совместимость с разными именами полей
+            categoryName: item.categoryName || item.name,
             genres: item.genres || []
         }));
 
@@ -337,7 +336,6 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
                             </Form.Group>
                         </div>
 
-                        {/* Pricing & Stock */}
                         <div className="border rounded p-3 mb-4 bg-light">
                             <h6 className="mb-3">Pricing & Stock</h6>
 
@@ -412,7 +410,6 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
                             </div>
                         </div>
 
-                        {/* Image & Status */}
                         <div className="border rounded p-3 mb-4 bg-light">
                             <h6 className="mb-3">Image & Status</h6>
 
@@ -471,7 +468,6 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
                             )}
                         </div>
 
-                        {/* Categories & Genres */}
                         <div className="border rounded p-3 mb-0 bg-light">
                             <h6 className="mb-3">Categories & Genres</h6>
 

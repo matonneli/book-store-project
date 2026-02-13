@@ -10,11 +10,9 @@ const EditAuthorModal = ({ show, onClose }) => {
     const toast = useToast();
     const { authors, updateAuthor } = useReferences();
 
-    // Состояние для поиска
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
-    // Состояние для редактирования
     const [selectedAuthor, setSelectedAuthor] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
@@ -24,7 +22,6 @@ const EditAuthorModal = ({ show, onClose }) => {
     const [saving, setSaving] = useState(false);
     const [validationErrors, setValidationErrors] = useState({});
 
-    // Debounce для поиска (300ms)
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearchTerm(searchTerm);
@@ -33,7 +30,6 @@ const EditAuthorModal = ({ show, onClose }) => {
         return () => clearTimeout(timer);
     }, [searchTerm]);
 
-    // Локальный поиск по авторам из контекста
     const searchResults = useMemo(() => {
         if (!debouncedSearchTerm.trim()) {
             return [];
@@ -41,15 +37,12 @@ const EditAuthorModal = ({ show, onClose }) => {
 
         const term = debouncedSearchTerm.trim().toLowerCase();
 
-        // Проверяем, является ли запрос числом (ID)
         const isNumeric = /^\d+$/.test(term);
 
         if (isNumeric) {
-            // Поиск по ID
             const authorId = parseInt(term, 10);
             return authors.filter(author => author.authorId === authorId);
         } else {
-            // Поиск по имени (регистронезависимый)
             return authors.filter(author =>
                 author.fullName.toLowerCase().includes(term)
             );
@@ -141,7 +134,6 @@ const EditAuthorModal = ({ show, onClose }) => {
                     const errorData = await response.json();
                     errorMessage = errorData.message || errorMessage;
                 } catch {
-                    // ignore
                 }
 
                 if (response.status === 401) {
@@ -153,11 +145,9 @@ const EditAuthorModal = ({ show, onClose }) => {
 
             const updatedAuthor = await response.json();
 
-            // Обновляем selectedAuthor
             setSelectedAuthor(updatedAuthor);
             setIsEditing(false);
 
-            // Обновляем автора в контексте (оптимизировано - без полного перезапроса)
             updateAuthor(updatedAuthor);
 
             toast.success(`Author "${updatedAuthor.fullName}" updated successfully!`);
@@ -186,7 +176,6 @@ const EditAuthorModal = ({ show, onClose }) => {
             </Modal.Header>
 
             <Modal.Body>
-                {/* Поиск автора */}
                 <div className="mb-4">
                     <Form.Label className="fw-bold">Search Author</Form.Label>
                     <Form.Control
@@ -201,7 +190,6 @@ const EditAuthorModal = ({ show, onClose }) => {
                     </Form.Text>
                 </div>
 
-                {/* Результаты поиска */}
                 {searchTerm.trim() && searchResults.length > 0 && !selectedAuthor && (
                     <div className="mb-4">
                         <h6 className="mb-2">Search Results ({searchResults.length})</h6>
@@ -233,14 +221,12 @@ const EditAuthorModal = ({ show, onClose }) => {
                     </div>
                 )}
 
-                {/* Сообщение "не найдено" */}
                 {searchTerm.trim() && searchResults.length === 0 && !selectedAuthor && (
                     <div className="alert alert-info mb-4">
                         No authors found for "{searchTerm}"
                     </div>
                 )}
 
-                {/* Выбранный автор */}
                 {selectedAuthor && (
                     <div className="border rounded p-3 bg-light">
                         <div className="d-flex justify-content-between align-items-center mb-3">
@@ -258,7 +244,6 @@ const EditAuthorModal = ({ show, onClose }) => {
                         </div>
 
                         {!isEditing ? (
-                            // Режим просмотра
                             <>
                                 <div className="mb-2">
                                     <strong>ID:</strong> <Badge bg="secondary">{selectedAuthor.authorId}</Badge>
@@ -277,7 +262,6 @@ const EditAuthorModal = ({ show, onClose }) => {
                                 </Button>
                             </>
                         ) : (
-                            // Режим редактирования
                             <>
                                 <div className="mb-2">
                                     <strong>ID:</strong> <Badge bg="secondary">{selectedAuthor.authorId}</Badge>
@@ -331,7 +315,7 @@ const EditAuthorModal = ({ show, onClose }) => {
                                                 <Spinner as="span" animation="border" size="sm" /> Saving...
                                             </>
                                         ) : (
-                                            '💾 Save Changes'
+                                            'Save Changes'
                                         )}
                                     </Button>
                                     <Button

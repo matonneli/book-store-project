@@ -1,4 +1,3 @@
-// src/components/ToastSystem.jsx
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
 const ToastContext = createContext(undefined);
