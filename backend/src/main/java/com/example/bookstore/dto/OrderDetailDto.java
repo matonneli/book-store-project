@@ -12,7 +12,7 @@ public class OrderDetailDto {
     private LocalDateTime createdAt;
     private LocalDateTime paidAt;
     private LocalDateTime deliveredAt;
-    private String pickUpPoint;
+    private PickUpPointDto pickUpPoint;
     private BigDecimal totalPrice;
     private List<OrderItemDto> items;
 
@@ -58,11 +58,11 @@ public class OrderDetailDto {
         this.deliveredAt = deliveredAt;
     }
 
-    public String getPickUpPoint() {
+    public PickUpPointDto getPickUpPoint() {
         return pickUpPoint;
     }
 
-    public void setPickUpPoint(String pickUpPoint) {
+    public void setPickUpPoint(PickUpPointDto pickUpPoint) {
         this.pickUpPoint = pickUpPoint;
     }
 

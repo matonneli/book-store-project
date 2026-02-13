@@ -1,12 +1,14 @@
 package com.example.bookstore.controller;
 
-import com.example.bookstore.dto.OrderSummaryDto;
 import com.example.bookstore.dto.OrderDetailDto;
+import com.example.bookstore.dto.OrderSummaryDto;
+import com.example.bookstore.exception.OrderException;
 import com.example.bookstore.model.Orders;
 import com.example.bookstore.service.OrderService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,12 +23,15 @@ public class OrderController {
     }
 
     @PostMapping("/place")
-    public ResponseEntity<Orders> placeOrder(
+    public ResponseEntity<OrderDetailDto> placeOrder(
             @RequestHeader("Authorization") String token,
             @RequestBody PlaceOrderRequest request) {
-
-        Orders order = orderService.createOrderFromCart(token, request.getPickupPoint());
-        return ResponseEntity.ok(order);
+        if (request.getPickupPointId() == null) {
+            throw new OrderException("Pickup point ID is required");
+        }
+        Orders order = orderService.createOrderFromCart(token, request.getPickupPointId());
+        OrderDetailDto orderDetail = orderService.getOrderDetails(order.getOrderId(), token);
+        return ResponseEntity.ok(orderDetail);
     }
 
     @GetMapping("/my-orders")
@@ -34,7 +39,6 @@ public class OrderController {
             @RequestHeader("Authorization") String token,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-
         Pageable pageable = PageRequest.of(page, size);
         Page<OrderSummaryDto> orders = orderService.getUserOrders(token, pageable);
         return ResponseEntity.ok(orders);
@@ -44,41 +48,47 @@ public class OrderController {
     public ResponseEntity<OrderDetailDto> getOrderDetails(
             @RequestHeader("Authorization") String token,
             @PathVariable Integer orderId) {
-
         OrderDetailDto orderDetail = orderService.getOrderDetails(orderId, token);
         return ResponseEntity.ok(orderDetail);
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<Orders> getOrderById(
-            @RequestHeader("Authorization") String token,
-            @PathVariable Integer orderId) {
-
-        Orders order = orderService.getOrderById(orderId, token);
-        return ResponseEntity.ok(order);
+    public ResponseEntity<OrderDetailDto> getOrderById(
+                                                        @RequestHeader("Authorization") String token,
+                                                        @PathVariable Integer orderId) {
+        OrderDetailDto orderDetail = orderService.getOrderDetails(orderId, token);
+        return ResponseEntity.ok(orderDetail);
     }
 
     @PostMapping("/{orderId}/confirm-payment")
-    public ResponseEntity<Orders> confirmPayment(@PathVariable Integer orderId) {
+    public ResponseEntity<OrderDetailDto> confirmPayment( // ИЗМЕНЕНО: Orders -> OrderDetailDto
+                                                          @PathVariable Integer orderId,
+                                                          @RequestHeader("Authorization") String token) {
         Orders order = orderService.confirmPayment(orderId);
-        return ResponseEntity.ok(order);
+        OrderDetailDto orderDetail = orderService.getOrderDetails(order.getOrderId(), token);
+        return ResponseEntity.ok(orderDetail);
+    }
+
+    @ExceptionHandler(OrderException.class)
+    public ResponseEntity<String> handleOrderException(OrderException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     public static class PlaceOrderRequest {
-        private String pickupPoint;
+        private Integer pickupPointId;
 
         public PlaceOrderRequest() {}
 
-        public PlaceOrderRequest(String pickupPoint) {
-            this.pickupPoint = pickupPoint;
+        public PlaceOrderRequest(Integer pickupPointId) {
+            this.pickupPointId = pickupPointId;
         }
 
-        public String getPickupPoint() {
-            return pickupPoint;
+        public Integer getPickupPointId() {
+            return pickupPointId;
         }
 
-        public void setPickupPoint(String pickupPoint) {
-            this.pickupPoint = pickupPoint;
+        public void setPickupPointId(Integer pickupPointId) {
+            this.pickupPointId = pickupPointId;
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.bookstore.service;
 
+import com.example.bookstore.dto.CreateReviewDto;
 import com.example.bookstore.dto.SingleBookReviewsDto;
 import com.example.bookstore.dto.SingleUserReviewsDto;
 import com.example.bookstore.dto.UpdateReviewDto;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +77,78 @@ public class ReviewService {
                 "hasNext", reviewPage.hasNext(),
                 "hasPrevious", reviewPage.hasPrevious()
         );
+    }
+
+    @Transactional
+    public Review createReview(CreateReviewDto createReviewDto, String token) {
+        validateCreateReviewDto(createReviewDto);
+        Client client = authService.getClientFromToken(token);
+        if (!reviewRepository.hasUserPurchasedBook(client.getUserId(), createReviewDto.getBookId())) {
+            throw new ValidationException("You can only review books you have purchased or rented");
+        }
+        if (reviewRepository.existsByUserIdAndBookId(client.getUserId(), createReviewDto.getBookId())) {
+            throw new ValidationException("You have already reviewed this book. You can edit your existing review instead.");
+        }
+        Review review = new Review();
+        review.setUserId(client.getUserId());
+        review.setBookId(createReviewDto.getBookId());
+        review.setRating(createReviewDto.getRating());
+        review.setComment(createReviewDto.getComment() != null ?
+                createReviewDto.getComment().trim() : null);
+        review.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+        return reviewRepository.save(review);
+    }
+
+    public Map<String, Object> canUserReviewBook(Integer bookId, String token) {
+        Client client = authService.getClientFromToken(token);
+        boolean hasPurchased = reviewRepository.hasUserPurchasedBook(client.getUserId(), bookId);
+        boolean hasReviewed = reviewRepository.existsByUserIdAndBookId(client.getUserId(), bookId);
+        Review existingReview = null;
+
+        if (hasReviewed) {
+            existingReview = reviewRepository.findByUserIdAndBookId(client.getUserId(), bookId)
+                    .orElse(null);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("canReview", hasPurchased && !hasReviewed);
+        result.put("hasPurchased", hasPurchased);
+        result.put("hasReviewed", hasReviewed);
+
+        if (existingReview != null) {
+            Map<String, Object> reviewData = new HashMap<>();
+            reviewData.put("reviewId", existingReview.getReviewId());
+            reviewData.put("rating", existingReview.getRating());
+            reviewData.put("comment", existingReview.getComment()); // может быть null
+            reviewData.put("createdAt", existingReview.getCreatedAt());
+            result.put("existingReview", reviewData);
+        } else {
+            result.put("existingReview", null);
+        }
+
+        return result;
+    }
+
+    private void validateCreateReviewDto(CreateReviewDto dto) {
+        if (dto == null) {
+            throw new ValidationException("Review data cannot be null");
+        }
+
+        if (dto.getBookId() == null) {
+            throw new ValidationException("Book ID is required");
+        }
+
+        if (dto.getRating() == null) {
+            throw new ValidationException("Rating is required");
+        }
+
+        if (dto.getRating() < 1 || dto.getRating() > 5) {
+            throw new ValidationException("Rating must be between 1 and 5");
+        }
+
+        if (dto.getComment() != null && dto.getComment().trim().length() > 1000) {
+            throw new ValidationException("Comment cannot exceed 1000 characters");
+        }
     }
 
     @Transactional

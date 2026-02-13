@@ -4,14 +4,6 @@ import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastSystem";
 import bookabeLogo from "../assets/images/bookabe-logo.jpg";
 
-const PICKUP_POINTS = [
-    { name: "Point 1", address: "ul. Słoneczna 12, 90-123 Łódź" },
-    { name: "Point 2", address: "al. Kwiatowa 7/9, 91-456 Łódź" },
-    { name: "Point 3", address: "ul. Brzozowa 45, 92-789 Łódź" },
-    { name: "Point 4", address: "pl. Wolności 3, 90-987 Łódź" },
-    { name: "Point 5", address: "ul. Zielona Polana 28, 91-234 Łódź" },
-];
-
 const PAYMENT_METHODS = [
     { id: "online", name: "💳 Online Payment", description: "Pay now with your card" },
     { id: "pickup", name: "💵 Pay on Pickup", description: "Pay in cash or card upon receipt" },
@@ -25,6 +17,7 @@ const CheckoutPage = () => {
     const [error, setError] = useState(null);
     const [hasShownWarning, setHasShownWarning] = useState(false);
     const [orderPlaced, setOrderPlaced] = useState(false);
+    const [pickupPoints, setPickupPoints] = useState([]);
 
     const navigate = useNavigate();
     const { authToken } = useAuth();
@@ -36,12 +29,14 @@ const CheckoutPage = () => {
             return;
         }
         fetchCartContents();
+        fetchPickupPoints();
     }, [authToken, navigate]);
 
     useEffect(() => {
         function handlePaymentMessage(event) {
             if (event.data === 'payment_success') {
                 success('Payment confirmed and order placed successfully! Check orders on your page!');
+                setOrderPlaced(true);
             }
         }
 
@@ -49,7 +44,29 @@ const CheckoutPage = () => {
         return () => {
             window.removeEventListener('message', handlePaymentMessage);
         };
-    }, [success, navigate]);
+    }, [success]);
+
+    const fetchPickupPoints = async () => {
+        try {
+            const response = await fetch('/api/pickup-points/active', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setPickupPoints(data);
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `Failed to fetch pickup points: ${response.status}`);
+            }
+        } catch (err) {
+            console.error('Error fetching pickup points:', err);
+            showError('Failed to load pickup points');
+        }
+    };
 
     const fetchCartContents = async () => {
         setLoading(true);
@@ -112,14 +129,14 @@ const CheckoutPage = () => {
                     'Authorization': `Bearer ${authToken}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ pickupPoint })
+                body: JSON.stringify({ pickupPointId: pickupPoint })
             });
 
             if (response.ok) {
                 const order = await response.json();
 
                 if (paymentMethod === "online") {
-                    window.open(`/payment-mock?orderId=${order.orderId}`, "_blank");
+                    window.open(order.paymentUrl || `/payment-mock?orderId=${order.orderId}`, "_blank");
                 } else {
                     success("Order placed successfully! You'll pay upon pickup.");
                     setOrderPlaced(true);
@@ -134,6 +151,11 @@ const CheckoutPage = () => {
         }
     };
 
+    const getSelectedPickupPointName = () => {
+        const selectedPoint = pickupPoints.find(point => point.pickupPointId === pickupPoint);
+        return selectedPoint ? selectedPoint.name : '';
+    };
+
     const renderOrderConfirmation = () => (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center text-center px-4">
             <div className="bg-white p-6 rounded-xl shadow-md max-w-md w-full">
@@ -141,7 +163,7 @@ const CheckoutPage = () => {
                     Order Confirmed!
                 </h1>
                 <p className="text-gray-600 mb-6" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                    Your order has been placed successfully. You can pick it up at {pickupPoint}.
+                    Your order has been placed successfully. You can pick it up at {getSelectedPickupPointName()}.
                 </p>
                 <button
                     onClick={() => navigate("/catalog")}
@@ -205,6 +227,7 @@ const CheckoutPage = () => {
                         <CartItemsList items={cartData.items} />
                         <OrderSummary cartData={cartData} />
                         <PickupPointSelector
+                            pickupPoints={pickupPoints}
                             pickupPoint={pickupPoint}
                             setPickupPoint={setPickupPoint}
                         />
@@ -372,23 +395,72 @@ const SummaryRow = ({ label, value, className = "" }) => (
     </div>
 );
 
-const PickupPointSelector = ({ pickupPoint, setPickupPoint }) => (
+const PickupPointSelector = ({ pickupPoints, pickupPoint, setPickupPoint }) => (
     <div className="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-6 mb-8">
         <h3 className="text-xl font-semibold mb-4 text-[#321d4f]" style={{ fontFamily: "'Poppins', sans-serif" }}>
             Select Pickup Point
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {PICKUP_POINTS.map((point) => (
-                <SelectableOption
-                    key={point.name}
-                    selected={pickupPoint === point.name}
-                    onClick={() => setPickupPoint(point.name)}
-                    icon="📍"
-                    title={point.name}
-                    description={point.address}
+            {pickupPoints.map((point) => (
+                <SelectablePickupPoint
+                    key={point.pickupPointId}
+                    selected={pickupPoint === point.pickupPointId}
+                    onClick={() => setPickupPoint(point.pickupPointId)}
+                    point={point}
                 />
             ))}
         </div>
+    </div>
+);
+
+const SelectablePickupPoint = ({ selected, onClick, point }) => (
+    <div className="relative group">
+        <div
+            className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                selected
+                    ? 'border-[#321d4f] bg-[#f1e9ff]'
+                    : 'border-gray-200 hover:border-[#4a2870] hover:bg-gray-50'
+            }`}
+            onClick={onClick}
+        >
+            <div className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    selected ? 'bg-[#321d4f] text-white' : 'bg-gray-200 text-gray-600'
+                }`}>
+                    📍
+                </div>
+                <div>
+                    <p className="text-[#321d4f] font-medium" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                        {point.name}
+                    </p>
+                    <p className="text-sm text-gray-600" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                        {point.address}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {/* Tooltip on hover */}
+        {(point.contactPhone || point.workingHours) && (
+            <div className="absolute top-full left-0 mt-2 p-4 bg-white rounded-xl shadow-md border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-10 min-w-max">
+                {point.contactPhone && (
+                    <div className="flex items-center gap-3 mb-2">
+                        <span className="text-lg">📞</span>
+                        <p className="text-[#321d4f] font-medium" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                            {point.contactPhone.replace(/(\+\d{2})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4')}
+                        </p>
+                    </div>
+                )}
+                {point.workingHours && (
+                    <div className="flex items-center gap-3">
+                        <span className="text-lg">🗓</span>
+                        <p className="text-[#321d4f] font-medium" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                            {point.workingHours}
+                        </p>
+                    </div>
+                )}
+            </div>
+        )}
     </div>
 );
 

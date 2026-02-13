@@ -31,7 +31,6 @@ function App() {
                             <Route path="/book/:id" element={<BookDetailPage />} />
                             <Route path="/login/user" element={<UserLoginForm />} />
                             <Route path="/register/user" element={<UserRegisterForm />} />
-                            <Route path="/login/admin" element={<AdminLoginForm />} />
                             <Route path="/user" element={<ProtectedRoute><UserPage /></ProtectedRoute>} />
                             <Route path="/cart" element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
                             <Route path="/checkout" element={<ProtectedRoute><CheckoutConfirmationPage /></ProtectedRoute>} />

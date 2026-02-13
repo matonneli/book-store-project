@@ -1,5 +1,6 @@
 package com.example.bookstore.controller;
 
+import com.example.bookstore.dto.CreateReviewDto;
 import com.example.bookstore.dto.SingleUserReviewsDto;
 import com.example.bookstore.dto.UpdateReviewDto;
 import com.example.bookstore.exception.NotFoundException;
@@ -41,6 +42,20 @@ public class ReviewController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Unexpected error"));
         }
+    }
+
+    @PostMapping("api/user/reviews/add")
+    public ResponseEntity<Review> createReview(@RequestBody CreateReviewDto createReviewDto,
+                                               @RequestHeader("Authorization") String token) {
+        Review createdReview = reviewService.createReview(createReviewDto, token);
+        return ResponseEntity.ok(createdReview);
+    }
+
+    @GetMapping("api/reviews/can-review/{bookId}")
+    public ResponseEntity<Map<String, Object>> canUserReviewBook(@PathVariable Integer bookId,
+                                                                 @RequestHeader("Authorization") String token) {
+        Map<String, Object> result = reviewService.canUserReviewBook(bookId, token);
+        return ResponseEntity.ok(result);
     }
 
     @PutMapping("/api/user/reviews/{reviewId}")

@@ -18,7 +18,7 @@ public class Orders {
     private LocalDateTime createdAt;
     private LocalDateTime paidAt;
     private LocalDateTime deliveredAt;
-    private String pickUpPoint;
+    private Integer pickupPointId;
 
     public Orders() {}
     public Integer getOrderId() {
@@ -64,11 +64,11 @@ public class Orders {
         this.deliveredAt = deliveredAt;
     }
 
-    public String getPickUpPoint() {
-        return pickUpPoint;
+    public Integer getPickUpPoint() {
+        return pickupPointId;
     }
 
-    public void setPickUpPoint(String pickUpPoint) {
-        this.pickUpPoint = pickUpPoint;
+    public void setPickUpPoint(Integer pickupPointId) {
+        this.pickupPointId = pickupPointId;
     }
 }

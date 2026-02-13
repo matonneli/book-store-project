@@ -52,4 +52,17 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
     @Modifying
     @Query("DELETE FROM Review r WHERE r.reviewId = :reviewId AND r.userId = :userId")
     int deleteByReviewIdAndUserId(@Param("reviewId") Integer reviewId, @Param("userId") Integer userId);
+
+    @Query("SELECT COUNT(r) > 0 FROM Review r WHERE r.userId = :userId AND r.bookId = :bookId")
+    boolean existsByUserIdAndBookId(@Param("userId") Integer userId, @Param("bookId") Integer bookId);
+
+    @Query("SELECT r FROM Review r WHERE r.userId = :userId AND r.bookId = :bookId")
+    Optional<Review> findByUserIdAndBookId(@Param("userId") Integer userId, @Param("bookId") Integer bookId);
+
+    @Query("""
+    SELECT COUNT(oi) > 0 FROM OrderItem oi 
+    JOIN Orders o ON oi.orderId = o.orderId 
+    WHERE o.userId = :userId AND oi.bookId = :bookId
+""")
+    boolean hasUserPurchasedBook(@Param("userId") Integer userId, @Param("bookId") Integer bookId);
 }

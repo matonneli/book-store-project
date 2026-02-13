@@ -1,11 +1,8 @@
 package com.example.bookstore.dto;
 
 import com.example.bookstore.enums.OrderStatus;
-import com.example.bookstore.enums.ItemStatus;
-import com.example.bookstore.enums.ItemType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class OrderSummaryDto {
     private Integer orderId;
@@ -13,7 +10,7 @@ public class OrderSummaryDto {
     private LocalDateTime createdAt;
     private LocalDateTime paidAt;
     private LocalDateTime deliveredAt;
-    private String pickUpPoint;
+    private PickUpPointDto pickUpPoint;
     private BigDecimal totalPrice;
     private Integer itemCount;
 
@@ -59,11 +56,11 @@ public class OrderSummaryDto {
         this.deliveredAt = deliveredAt;
     }
 
-    public String getPickUpPoint() {
+    public PickUpPointDto getPickUpPoint() {
         return pickUpPoint;
     }
 
-    public void setPickUpPoint(String pickUpPoint) {
+    public void setPickUpPoint(PickUpPointDto pickUpPoint) { // ИЗМЕНЕНО: принимает PickUpPointDto
         this.pickUpPoint = pickUpPoint;
     }
 

@@ -12,7 +12,6 @@ public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer reviewId;
-
     private Integer userId;
     private Integer bookId;
     private Integer rating;

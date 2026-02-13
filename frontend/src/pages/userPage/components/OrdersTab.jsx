@@ -4,14 +4,6 @@ import { useToast } from '../../../contexts/ToastSystem';
 import { useNavigate } from 'react-router-dom';
 import OrderItemList from './OrderItemList';
 
-const PICKUP_POINTS = [
-    { name: "Point 1", address: "ul. Słoneczna 12, 90-123 Łódź" },
-    { name: "Point 2", address: "al. Kwiatowa 7/9, 91-456 Łódź" },
-    { name: "Point 3", address: "ul. Brzozowa 45, 92-789 Łódź" },
-    { name: "Point 4", address: "pl. Wolności 3, 90-987 Łódź" },
-    { name: "Point 5", address: "ul. Zielona Polana 28, 91-234 Łódź" },
-];
-
 function OrdersTab() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -199,9 +191,66 @@ function OrdersTab() {
         return parseFloat(price).toFixed(2);
     };
 
-    const getPickupPointAddress = (pointName) => {
-        const point = PICKUP_POINTS.find(p => p.name === pointName);
-        return point ? `${point.name} - ${point.address}` : pointName || 'Not specified';
+    const renderPickupPointInfo = (pickUpPoint) => {
+        if (!pickUpPoint) {
+            return (
+                <span
+                    className="font-medium text-gray-500"
+                    style={{ fontFamily: "'Montserrat', sans-serif" }}
+                >
+                    Not specified
+                </span>
+            );
+        }
+
+        return (
+            <div className="relative group inline-block">
+                <div className="flex items-center gap-2 cursor-pointer">
+                    <span className="text-lg">📍</span>
+                    <span
+                        className="font-medium text-[#321d4f] hover:text-[#4a2870] transition-colors"
+                        style={{ fontFamily: "'Montserrat', sans-serif" }}
+                    >
+                        {pickUpPoint.name}
+                    </span>
+                </div>
+
+                {/* Tooltip on hover */}
+                <div className="absolute top-full left-0 mt-2 p-4 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-20 min-w-max max-w-xs">
+                    <div className="space-y-3">
+                        <div className="flex items-start gap-3">
+                            <span className="text-lg mt-0.5">🏢</span>
+                            <div>
+                                <p className="text-[#321d4f] font-semibold text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                                    {pickUpPoint.name}
+                                </p>
+                                <p className="text-gray-600 text-sm leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                    {pickUpPoint.address}
+                                </p>
+                            </div>
+                        </div>
+
+                        {pickUpPoint.contactPhone && (
+                            <div className="flex items-center gap-3">
+                                <span className="text-lg">📞</span>
+                                <p className="text-[#321d4f] font-medium text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                    {pickUpPoint.contactPhone.replace(/(\+\d{2})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4')}
+                                </p>
+                            </div>
+                        )}
+
+                        {pickUpPoint.workingHours && (
+                            <div className="flex items-center gap-3">
+                                <span className="text-lg">🕒</span>
+                                <p className="text-[#321d4f] font-medium text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                    {pickUpPoint.workingHours}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     if (loading) {
@@ -353,12 +402,9 @@ function OrdersTab() {
                                         <div className="text-sm">
                                             <div className="flex flex-col space-y-1">
                                                 <span className="text-gray-600">Location:</span>
-                                                <span
-                                                    className="font-medium text-sm leading-relaxed"
-                                                    style={{ fontFamily: "'Montserrat', sans-serif" }}
-                                                >
-                                                    {getPickupPointAddress(order.pickUpPoint)}
-                                                </span>
+                                                <div className="font-medium text-sm leading-relaxed">
+                                                    {renderPickupPointInfo(order.pickUpPoint)}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

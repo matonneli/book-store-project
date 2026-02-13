@@ -86,4 +86,76 @@ public interface BookRepository extends JpaRepository<Book, Integer>{
 
     @Query("SELECT COUNT(r) FROM Review r WHERE r.bookId = :bookId")
     Integer getTotalReviewsByBookId(@Param("bookId") Integer bookId);
+
+    @Query("""
+  SELECT DISTINCT b
+    FROM Book b
+    LEFT JOIN BookGenre bg ON b.bookId = bg.bookId
+    LEFT JOIN BookCategory bc ON b.bookId = bc.bookId
+    JOIN Author a ON a.authorId = b.authorId
+  WHERE (
+         :pattern IS NULL
+      OR b.title ILIKE :pattern
+      OR a.fullName ILIKE :pattern
+    )
+  ORDER BY b.createdAt DESC
+""")
+    Page<Book> findForAdminSortedByCreatedAtDesc(
+            @Param("pattern") String pattern,
+            Pageable pageable
+    );
+
+    @Query("""
+  SELECT DISTINCT b
+    FROM Book b
+    LEFT JOIN BookGenre bg ON b.bookId = bg.bookId
+    LEFT JOIN BookCategory bc ON b.bookId = bc.bookId
+    JOIN Author a ON a.authorId = b.authorId
+  WHERE (
+         :pattern IS NULL
+      OR b.title ILIKE :pattern
+      OR a.fullName ILIKE :pattern
+    )
+  ORDER BY b.createdAt ASC
+""")
+    Page<Book> findForAdminSortedByCreatedAtAsc(
+            @Param("pattern") String pattern,
+            Pageable pageable
+    );
+
+    @Query("""
+  SELECT DISTINCT b
+    FROM Book b
+    LEFT JOIN BookGenre bg ON b.bookId = bg.bookId
+    LEFT JOIN BookCategory bc ON b.bookId = bc.bookId
+    JOIN Author a ON a.authorId = b.authorId
+  WHERE (
+         :pattern IS NULL
+      OR b.title ILIKE :pattern
+      OR a.fullName ILIKE :pattern
+    )
+  ORDER BY b.updatedAt DESC
+""")
+    Page<Book> findForAdminSortedByUpdatedAtDesc(
+            @Param("pattern") String pattern,
+            Pageable pageable
+    );
+
+    @Query("""
+  SELECT DISTINCT b
+    FROM Book b
+    LEFT JOIN BookGenre bg ON b.bookId = bg.bookId
+    LEFT JOIN BookCategory bc ON b.bookId = bc.bookId
+    JOIN Author a ON a.authorId = b.authorId
+  WHERE (
+         :pattern IS NULL
+      OR b.title ILIKE :pattern
+      OR a.fullName ILIKE :pattern
+    )
+  ORDER BY b.updatedAt ASC
+""")
+    Page<Book> findForAdminSortedByUpdatedAtAsc(
+            @Param("pattern") String pattern,
+            Pageable pageable
+    );
 }

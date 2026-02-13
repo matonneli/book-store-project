@@ -98,7 +98,7 @@ function RentalItemList({ rentals, lastRentalElementRef, loadingMore, hasNext })
                                     className="text-sm text-gray-600 mt-1"
                                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                                 >
-                                    Ожидает получения (даты аренды будут установлены после выдачи)
+                                    Awaiting confirmation.
                                 </p>
                             ) : (
                                 <div className="text-sm mt-1 space-y-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
