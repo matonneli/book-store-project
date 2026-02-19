@@ -21,6 +21,14 @@ function RentalItemList({ rentals, lastRentalElementRef, loadingMore, hasNext })
             OVERDUE: {
                 color: 'bg-red-100 text-red-800',
                 text: 'Overdue'
+            },
+            RETURNED: {
+                color: 'bg-green-100 text-green-800',
+                text: 'Returned'
+            },
+            CANCELLED: {
+                color: 'bg-red-100 text-red-800',
+                text: 'Cancelled'
             }
         };
 
@@ -103,7 +111,11 @@ function RentalItemList({ rentals, lastRentalElementRef, loadingMore, hasNext })
                             ) : (
                                 <div className="text-sm mt-1 space-y-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                                     <p>Start: {formatDateTime(item.rentalStartAt)}</p>
-                                    <p>End: {formatDateTime(item.rentalEndAt)}</p>
+                                    <p>
+                                        {item.itemStatus === 'RETURNED'
+                                            ? `Returned on: ${formatDateTime(item.rentalEndAt)}`
+                                            : `Due by: ${formatDateTime(item.rentalEndAt)}`}
+                                    </p>
                                 </div>
                             )}
                             <div className="mt-2">

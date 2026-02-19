@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { CartProvider, useCart } from '../../contexts/CartContext';
-import { ToastProvider } from '../../contexts/ToastSystem';
+import { ToastProvider, useToast } from '../../contexts/ToastSystem';
 import bookabeLogo from '../../assets/images/bookabe-logo.jpg';
 import ProfileTab from './components/ProfileTab';
 import ReviewsTab from './components/ReviewsTab';
@@ -41,6 +41,30 @@ function UserPage() {
     const [activeTab, setActiveTab] = useState('profile');
     const { authToken, user, logout } = useAuth();
     const navigate = useNavigate();
+    const { warning } = useToast();
+
+    useEffect(() => {
+        console.log('authToken:', authToken);
+        console.log('sessionStorage flag:', sessionStorage.getItem('alertsShownUserPage'));
+        if (!authToken) return;
+        if (sessionStorage.getItem('alertsShownUserPage')) return;
+
+        fetch('/api/notifications/alerts', {
+            headers: { Authorization: `Bearer ${authToken}` }
+        })
+            .then(r => r.json())
+            .then(data => {
+                console.log('alerts data:', data);
+                if (data.hasReadyForPickup) {
+                    warning('You have orders ready for pickup! Check your account.');
+                }
+                if (data.hasOverdueRentals) {
+                    warning('You have overdue rentals! Check your account.');
+                }
+                sessionStorage.setItem('alertsShownUserPage', 'true');
+            })
+            .catch(() => {});
+    }, [authToken, warning]);
 
     useEffect(() => {
         if (!authToken) {

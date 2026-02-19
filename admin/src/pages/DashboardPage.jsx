@@ -31,14 +31,11 @@ const DashboardPage = () => {
     const testProtectedEndpoint = async () => {
         setLoading(true);
         setTestResult('');
-
         try {
             const response = await fetch('http://localhost:8081/api/admin/dashboard', {
                 credentials: 'include',
             });
-
             const text = await response.text();
-
             if (response.ok) {
                 setTestResult(`✅ Success: ${text}`);
                 updateLastActivity('testProtectedEndpoint');
@@ -60,7 +57,7 @@ const DashboardPage = () => {
         if (!pickUpPoint) return null;
         return (
             <div className="mt-3">
-                <h6 className="mb-2">📍 Assigned Pickup Point</h6>
+                <h6 className="mb-2">Assigned Pickup Point</h6>
                 <ul className="list-unstyled mb-0">
                     <li><strong>Name:</strong> {pickUpPoint.name}</li>
                     <li><strong>Address:</strong> {pickUpPoint.address}</li>
@@ -87,7 +84,7 @@ const DashboardPage = () => {
                 <div className="col-12">
                     <div className="card">
                         <div className="card-header">
-                            <h5 className="mb-0">🚧 Admin Features</h5>
+                            <h5 className="mb-0">Admin Features</h5>
                         </div>
                         <div className="card-body">
                             <div className="row">
@@ -99,7 +96,7 @@ const DashboardPage = () => {
                                             updateLastActivity('navigate to manage-books');
                                         }}
                                     >
-                                        📖 Manage Books
+                                        Manage Books
                                     </button>
                                 </div>
                                 <div className="col-md-3">
@@ -110,17 +107,29 @@ const DashboardPage = () => {
                                             updateLastActivity('navigate to manage-orders');
                                         }}
                                     >
-                                        🛒 Manage Orders
+                                        Manage Orders
                                     </button>
                                 </div>
                                 <div className="col-md-3">
-                                    <button className="btn btn-outline-primary w-100 mb-2" disabled>
-                                        👥 User Management
+                                    <button
+                                        className="btn btn-outline-primary w-100 mb-2"
+                                        onClick={() => {
+                                            navigate('/staff-management');
+                                            updateLastActivity('navigate to staff-management');
+                                        }}
+                                    >
+                                        Staff Management
                                     </button>
                                 </div>
                                 <div className="col-md-3">
-                                    <button className="btn btn-outline-primary w-100 mb-2" disabled>
-                                        📊 Analytics
+                                    <button
+                                        className="btn btn-outline-primary w-100 mb-2"
+                                        onClick={() => {
+                                            navigate('/analytics');
+                                            updateLastActivity('navigate to analytics');
+                                        }}
+                                    >
+                                        Analytics
                                     </button>
                                 </div>
                             </div>
@@ -138,7 +147,7 @@ const DashboardPage = () => {
                 <div className="col-12">
                     <div className="card">
                         <div className="card-header">
-                            <h5 className="mb-0">🚧 Worker Features</h5>
+                            <h5 className="mb-0">Worker Features</h5>
                         </div>
                         <div className="card-body">
                             <div className="row">
@@ -150,12 +159,18 @@ const DashboardPage = () => {
                                             updateLastActivity('navigate to manage-orders');
                                         }}
                                     >
-                                        🛒 View Orders
+                                        View Orders
                                     </button>
                                 </div>
                                 <div className="col-md-6">
-                                    <button className="btn btn-outline-primary w-100 mb-2" disabled>
-                                        📊 Analytics
+                                    <button
+                                        className="btn btn-outline-primary w-100 mb-2"
+                                        onClick={() => {
+                                            navigate('/analytics');
+                                            updateLastActivity('navigate to analytics');
+                                        }}
+                                    >
+                                        My Pickup Point Analytics
                                     </button>
                                 </div>
                             </div>
@@ -208,7 +223,7 @@ const DashboardPage = () => {
                             <div className="alert alert-success mb-2" role="alert">
                                 <strong>Welcome, {userInfo?.fullName || 'Admin'}!</strong> You are successfully authenticated.
                                 <br />
-                                <small className="text-muted">Session started: {formatLoginTime()}</small>
+                                <small className="text-muted">Session started: {formatLoginTime()}. Session time is 60 minutes.</small>
                             </div>
                             <InactivityTimer />
                         </div>
@@ -218,7 +233,7 @@ const DashboardPage = () => {
                         <div className="col-md-8">
                             <div className="card">
                                 <div className="card-header">
-                                    <h5 className="mb-0">🔒 Test Protected Endpoint</h5>
+                                    <h5 className="mb-0">Test Protected Endpoint</h5>
                                 </div>
                                 <div className="card-body">
                                     <p className="text-muted">
@@ -231,7 +246,6 @@ const DashboardPage = () => {
                                     >
                                         {loading ? 'Testing...' : 'Test /api/admin/dashboard'}
                                     </button>
-
                                     {testResult && (
                                         <div className="alert alert-info">
                                             <strong>Test Result:</strong><br />

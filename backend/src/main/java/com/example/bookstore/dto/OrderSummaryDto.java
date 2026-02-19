@@ -11,6 +11,7 @@ public class OrderSummaryDto {
     private LocalDateTime paidAt;
     private LocalDateTime deliveredAt;
     private PickUpPointDto pickUpPoint;
+    private LocalDateTime refundedAt;
     private BigDecimal totalPrice;
     private Integer itemCount;
 
@@ -79,4 +80,13 @@ public class OrderSummaryDto {
     public void setItemCount(Integer itemCount) {
         this.itemCount = itemCount;
     }
+
+    public LocalDateTime getRefundedAt() {
+        return refundedAt;
+    }
+
+    public void setRefundedAt(LocalDateTime refundedAt) {
+        this.refundedAt = refundedAt;
+    }
+
 }

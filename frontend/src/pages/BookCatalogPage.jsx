@@ -4,6 +4,7 @@ import { CatalogProvider } from '../contexts/CatalogContext';
 import { CartProvider, useCart } from '../contexts/CartContext';
 import { ToastProvider } from '../contexts/ToastSystem';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastSystem';
 import BookFilter from '../components/BookFilter';
 import BookList from '../components/BookList';
 import Pagination from '../components/Pagination';
@@ -63,6 +64,28 @@ const BookCatalogPageContent = () => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const { authToken, logout } = useAuth();
+    const toast = useToast();
+
+    // --- Notification alerts
+    useEffect(() => {
+        if (!authToken) return;
+        if (sessionStorage.getItem('alertsShownCatalog')) return;
+
+        fetch('/api/notifications/alerts', {
+            headers: { Authorization: `Bearer ${authToken}` }
+        })
+            .then(r => r.json())
+            .then(data => {
+                if (data.hasReadyForPickup) {
+                    toast.warning('You have orders ready for pickup! Check your account.');
+                }
+                if (data.hasOverdueRentals) {
+                    toast.warning('You have overdue rentals! Check your account.');
+                }
+                sessionStorage.setItem('alertsShownCatalog', 'true');
+            })
+            .catch(() => {});
+    }, [authToken]);
 
     // --- Read URL params
     useEffect(() => {

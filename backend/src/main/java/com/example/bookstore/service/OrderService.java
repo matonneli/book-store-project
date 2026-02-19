@@ -158,6 +158,7 @@ public class OrderService {
             summary.setCreatedAt(order.getCreatedAt());
             summary.setPaidAt(order.getPaidAt());
             summary.setDeliveredAt(order.getDeliveredAt());
+            summary.setRefundedAt(order.getRefundedAt());
             summary.setPickUpPoint(pickUpPoint != null ? pickUpPointService.mapToDto(pickUpPoint) : null);
             summary.setTotalPrice(order.getTotalPrice());
 
@@ -195,6 +196,7 @@ public class OrderService {
         orderDetail.setCreatedAt(order.getCreatedAt());
         orderDetail.setPaidAt(order.getPaidAt());
         orderDetail.setDeliveredAt(order.getDeliveredAt());
+        orderDetail.setRefundedAt(order.getRefundedAt());
         PickUpPointDto pickUpPoint = pickUpPointRepository.findById(order.getPickUpPoint())
                 .map(pickUpPointService::mapToDto)
                 .orElseThrow(() -> new OrderException("Pickup point not found: " + order.getPickUpPoint()));
@@ -296,6 +298,7 @@ public class OrderService {
         dto.setCreatedAt(order.getCreatedAt());
         dto.setPaidAt(order.getPaidAt());
         dto.setDeliveredAt(order.getDeliveredAt());
+        dto.setRefundedAt(order.getRefundedAt());
         dto.setTotalPrice(order.getTotalPrice());
 
         if (order.getPickUpPoint() != null) {
@@ -314,6 +317,7 @@ public class OrderService {
         dto.setCreatedAt(order.getCreatedAt());
         dto.setPaidAt(order.getPaidAt());
         dto.setDeliveredAt(order.getDeliveredAt());
+        dto.setRefundedAt(order.getRefundedAt());
         dto.setTotalPrice(order.getTotalPrice());
         dto.setUserId(order.getUserId());
         dto.setEmail(userEmail);
@@ -332,7 +336,7 @@ public class OrderService {
                 .orElseThrow(() -> new OrderException("Order not found: " + orderId));
 
         validateAdminAccess(order, admin);
-        if (order.getStatus() == OrderStatus.CANCELLED) {
+        if (isCancelledStatus(order.getStatus())) {
             throw new OrderException("Cannot change status of cancelled order");
         }
         OrderStatus previousStatus = order.getStatus();
@@ -393,11 +397,6 @@ public class OrderService {
         }
     }
 
-    /**
-     * Updates all order items when the order status changes to DELIVERED.
-     * - For PURCHASE items: sets status to DELIVERED
-     * - For RENT items: sets status to RENTED and calculates rental period
-     */
     @Transactional
     public void updateOrderItemsOnDelivery(Integer orderId) {
         List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
@@ -430,16 +429,6 @@ public class OrderService {
         }
     }
 
-    /**
-     * Updates the status of a single order item.
-     * Used by admin/worker to change item status individually.
-     * When status changes to RETURNED, returns the book to stock and records actual return date.
-     *
-     * @param orderItemId The ID of the order item
-     * @param newStatus The new status for the item
-     * @param admin The admin performing the action
-     * @return Updated OrderItem
-     */
     @Transactional
     public OrderItem updateOrderItemStatus(Integer orderItemId, ItemStatus newStatus, Admin admin) {
         OrderItem orderItem = orderItemRepository.findById(orderItemId)
@@ -468,6 +457,73 @@ public class OrderService {
     private void validateUserAccess(Orders order, Client client) {
         if (!order.getUserId().equals(client.getUserId())) {
             throw new OrderException("Access denied to order: " + order.getOrderId());
+        }
+    }
+
+    @Transactional
+    public Orders cancelOrderByUser(Integer orderId, String token) {
+        Client client = authService.getClientFromToken(token);
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderException("Order not found: " + orderId));
+
+        validateUserAccess(order, client);
+        validateOrderCanBeCancelled(order);
+
+        OrderStatus newStatus = (order.getPaidAt() != null)
+                ? OrderStatus.CANCELLED_BY_USER_PAID
+                : OrderStatus.CANCELLED_BY_USER_UNPAID;
+
+        order.setStatus(newStatus);
+        orderRepository.save(order);
+
+        returnBooksToStock(orderId);
+
+        return order;
+    }
+
+    private void validateOrderCanBeCancelled(Orders order) {
+        if (isCancelledStatus(order.getStatus())) {
+            throw new OrderException("Order is already cancelled");
+        }
+        if (order.getStatus() == OrderStatus.DELIVERED
+                || order.getStatus() == OrderStatus.DELIVERED_AND_PAID
+                || order.getStatus() == OrderStatus.RETURNED) {
+            throw new OrderException("Cannot cancel delivered order");
+        }
+    }
+
+    private boolean isCancelledStatus(OrderStatus status) {
+        return status == OrderStatus.CANCELLED
+                || status == OrderStatus.CANCELLED_BY_USER_PAID
+                || status == OrderStatus.CANCELLED_BY_USER_UNPAID
+                || status == OrderStatus.CANCELLED_BY_DEADLINE_PAID
+                || status == OrderStatus.CANCELLED_BY_DEADLINE_UNPAID;
+    }
+
+    @Transactional
+    public Orders processRefund(Integer orderId, String token) {
+        Client client = authService.getClientFromToken(token);
+        Orders order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderException("Order not found: " + orderId));
+
+        validateUserAccess(order, client);
+        validateRefundEligibility(order);
+
+        order.setRefundedAt(LocalDateTime.now());
+        orderRepository.save(order);
+
+        return order;
+    }
+
+    private void validateRefundEligibility(Orders order) {
+        if (!isCancelledStatus(order.getStatus())) {
+            throw new OrderException("Only cancelled orders are eligible for refund");
+        }
+        if (order.getPaidAt() == null) {
+            throw new OrderException("Cannot refund unpaid order");
+        }
+        if (order.getRefundedAt() != null) {
+            throw new OrderException("Order has already been refunded");
         }
     }
 }

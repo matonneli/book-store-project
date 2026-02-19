@@ -5,23 +5,41 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [authToken, setAuthToken] = useState(null);
     const [user, setUser] = useState(null);
+    const [isLoading, setIsLoading] = useState(true); // true until token validated
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const userData = localStorage.getItem('user');
+        const initAuth = async () => {
+            const token = localStorage.getItem('token');
 
-        if (token) {
-            setAuthToken(token);
-        }
-
-        if (userData) {
-            try {
-                setUser(JSON.parse(userData));
-            } catch (err) {
-                console.error('Failed to parse user data:', err);
-                localStorage.removeItem('user');
+            if (!token) {
+                setIsLoading(false);
+                return;
             }
-        }
+
+            try {
+                const response = await fetch('/api/user/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const userData = await response.json();
+                    setAuthToken(token);
+                    setUser(userData);
+                    localStorage.setItem('user', JSON.stringify(userData));
+                } else {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                }
+            } catch (err) {
+                console.error('Token validation failed:', err);
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        initAuth();
     }, []);
 
     const login = (token, userData = null) => {
@@ -45,9 +63,7 @@ export const AuthProvider = ({ children }) => {
             if (token) {
                 await fetch('/api/user/logout', {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
             }
         } catch (err) {
@@ -64,6 +80,7 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={{
             authToken,
             user,
+            isLoading,
             login,
             logout,
             setUserData

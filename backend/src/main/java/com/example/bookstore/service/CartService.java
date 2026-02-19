@@ -125,7 +125,7 @@ public class CartService {
 
         List<CartItemDto> cartItemDTOs = cartItems.stream()
                 .map(this::convertToCartItemDTO)
-                .filter(dto -> dto != null) // Remove invalid items
+                .filter(dto -> dto != null)
                 .collect(Collectors.toList());
 
         return new CartDto(cartItemDTOs);

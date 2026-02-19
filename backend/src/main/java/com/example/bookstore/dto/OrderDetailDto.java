@@ -12,6 +12,7 @@ public class OrderDetailDto {
     private LocalDateTime createdAt;
     private LocalDateTime paidAt;
     private LocalDateTime deliveredAt;
+    private LocalDateTime refundedAt;
     private PickUpPointDto pickUpPoint;
     private BigDecimal totalPrice;
     private List<OrderItemDto> items;
@@ -80,5 +81,13 @@ public class OrderDetailDto {
 
     public void setItems(List<OrderItemDto> items) {
         this.items = items;
+    }
+
+    public LocalDateTime getRefundedAt() {
+        return refundedAt;
+    }
+
+    public void setRefundedAt(LocalDateTime refundedAt) {
+        this.refundedAt = refundedAt;
     }
 }

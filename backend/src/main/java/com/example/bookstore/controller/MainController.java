@@ -6,6 +6,4 @@ import com.example.bookstore.config.PasswordUtils;
 
 @RestController
 public class MainController {
-
-
 }

@@ -13,8 +13,7 @@ function OrderItemList({ orderId, orderDetails, loadingDetails, onBookClick }) {
     });
 
     const { authToken } = useAuth();
-
-    // Load review statuses for all books when order details are loaded
+    
     useEffect(() => {
         if (orderDetails?.items && orderDetails.items.length > 0) {
             orderDetails.items.forEach(item => {
@@ -95,9 +94,17 @@ function OrderItemList({ orderId, orderDetails, loadingDetails, onBookClick }) {
                 color: 'bg-blue-100 text-blue-800',
                 text: 'Rented'
             },
+            RETURNED: {
+                color: 'bg-gray-100 text-gray-800',
+                text: 'Returned'
+            },
             OVERDUE: {
                 color: 'bg-red-100 text-red-800',
                 text: 'Overdue'
+            },
+            CANCELLED: {
+                color: 'bg-red-100 text-red-800',
+                text: 'Cancelled'
             }
         };
 
@@ -274,7 +281,6 @@ function OrderItemList({ orderId, orderDetails, loadingDetails, onBookClick }) {
                                         className="text-sm text-gray-600"
                                         style={{ fontFamily: "'Montserrat', sans-serif" }}
                                     >
-                                        by {item.authorFullName}
                                     </p>
                                 </div>
 
@@ -295,7 +301,6 @@ function OrderItemList({ orderId, orderDetails, loadingDetails, onBookClick }) {
                                     {getItemStatusBadge(item.itemStatus)}
                                 </div>
 
-                                {/* Review Section */}
                                 {renderReviewSection(item)}
                             </div>
                         </div>
@@ -303,7 +308,6 @@ function OrderItemList({ orderId, orderDetails, loadingDetails, onBookClick }) {
                 </div>
             </div>
 
-            {/* Review Modal */}
             <ReviewModal
                 isOpen={reviewModal.isOpen}
                 onClose={closeReviewModal}

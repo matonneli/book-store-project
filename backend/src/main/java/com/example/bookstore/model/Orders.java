@@ -19,6 +19,7 @@ public class Orders {
     private LocalDateTime paidAt;
     private LocalDateTime deliveredAt;
     private Integer pickupPointId;
+    private LocalDateTime refundedAt;
 
     public Orders() {}
     public Integer getOrderId() {
@@ -70,5 +71,21 @@ public class Orders {
 
     public void setPickUpPoint(Integer pickupPointId) {
         this.pickupPointId = pickupPointId;
+    }
+
+    public Integer getPickupPointId() {
+        return pickupPointId;
+    }
+
+    public void setPickupPointId(Integer pickupPointId) {
+        this.pickupPointId = pickupPointId;
+    }
+
+    public LocalDateTime getRefundedAt() {
+        return refundedAt;
+    }
+
+    public void setRefundedAt(LocalDateTime refundedAt) {
+        this.refundedAt = refundedAt;
     }
 }

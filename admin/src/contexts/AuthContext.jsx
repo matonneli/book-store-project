@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const AuthContext = createContext();
@@ -15,16 +15,26 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [userInfo, setUserInfo] = useState(null);
-    const [lastActivityTime, setLastActivityTime] = useState(Date.now());
+    const [lastActivityTime, setLastActivityTime] = useState(() => {
+        const stored = sessionStorage.getItem('lastActivityTime');
+        return stored ? parseInt(stored) : Date.now();
+    });
+
     const navigate = useNavigate();
     const location = useLocation();
 
-    const fetchAdminProfile = async () => {
+    // Use ref to avoid stale closure in setInterval
+    const lastActivityRef = useRef(lastActivityTime);
+    const isAuthenticatedRef = useRef(isAuthenticated);
+
+    useEffect(() => { lastActivityRef.current = lastActivityTime; }, [lastActivityTime]);
+    useEffect(() => { isAuthenticatedRef.current = isAuthenticated; }, [isAuthenticated]);
+
+    const fetchAdminProfile = useCallback(async () => {
         try {
             const response = await fetch('http://localhost:8081/api/admin/profile', {
                 credentials: 'include',
             });
-
             if (response.ok) {
                 const profile = await response.json();
                 setUserInfo(profile);
@@ -38,19 +48,17 @@ export const AuthProvider = ({ children }) => {
             setUserInfo(null);
             return false;
         }
-    };
+    }, []);
 
-    const checkAuthStatus = async () => {
+    const checkAuthStatus = useCallback(async () => {
         setIsLoading(true);
         try {
             const response = await fetch('http://localhost:8081/api/admin/auth-status', {
                 credentials: 'include',
             });
-
             if (response.ok) {
                 const data = await response.json();
                 setIsAuthenticated(data.authenticated);
-
                 if (data.authenticated) {
                     await fetchAdminProfile();
                 } else {
@@ -61,21 +69,20 @@ export const AuthProvider = ({ children }) => {
                 setUserInfo(null);
             }
         } catch (err) {
-            console.error('Auth check failed:', err);
             setIsAuthenticated(false);
             setUserInfo(null);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [fetchAdminProfile]);
 
-    const updateLastActivity = (source = 'unknown') => {
+    const updateLastActivity = useCallback((source = 'unknown') => {
         const now = Date.now();
         setLastActivityTime(now);
         sessionStorage.setItem('lastActivityTime', now.toString());
-    };
+    }, []);
 
-    const logout = async () => {
+    const logout = useCallback(async () => {
         try {
             await fetch('http://localhost:8081/api/admin/logout', {
                 method: 'POST',
@@ -91,43 +98,39 @@ export const AuthProvider = ({ children }) => {
             setLastActivityTime(Date.now());
             navigate('/login');
         }
-    };
+    }, [navigate]);
 
-    const getRemainingTime = () => {
-        const elapsed = Date.now() - lastActivityTime;
+    // Stable getRemainingTime using ref — no dependency on lastActivityTime state
+    const getRemainingTime = useCallback(() => {
+        const elapsed = Date.now() - lastActivityRef.current;
         return Math.max(0, 60 * 60 * 1000 - elapsed);
-    };
-
+    }, []);
     useEffect(() => {
-        const storedTime = sessionStorage.getItem('lastActivityTime');
-        if (storedTime) {
-            setLastActivityTime(parseInt(storedTime));
-        }
-
         checkAuthStatus();
         updateLastActivity(`navigation to ${location.pathname}`);
+    }, [location.pathname]);
+
+    useEffect(() => {
         const interval = setInterval(() => {
             const remaining = getRemainingTime();
-            if (remaining <= 0 && isAuthenticated) {
+            if (remaining <= 0 && isAuthenticatedRef.current) {
                 console.log('User idle for 60 minutes, logging out');
                 logout();
             }
-        }, 1000);
+        }, 60 * 1000);
 
+        return () => clearInterval(interval);
+    }, [getRemainingTime, logout]);
+
+    useEffect(() => {
         const handleStorageChange = (event) => {
             if (event.key === 'lastActivityTime' && event.newValue) {
                 setLastActivityTime(parseInt(event.newValue));
-                console.log(`lastActivityTime updated from storage: ${new Date(parseInt(event.newValue)).toISOString()}`);
             }
         };
-
         window.addEventListener('storage', handleStorageChange);
-
-        return () => {
-            clearInterval(interval);
-            window.removeEventListener('storage', handleStorageChange);
-        };
-    }, [location.pathname]);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, []);
 
     const value = {
         isAuthenticated,

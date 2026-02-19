@@ -12,27 +12,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookRepository extends JpaRepository<Book, Integer>{
-    @Query("""
-  SELECT DISTINCT b
-    FROM Book b
-    LEFT JOIN BookGenre bg ON b.bookId = bg.bookId
-    LEFT JOIN BookCategory bc ON b.bookId = bc.bookId
-    JOIN Author a ON a.authorId = b.authorId
-  WHERE (:genreIds IS NULL OR bg.genreId IN :genreIds)
-    AND (:categoryIds IS NULL OR bc.categoryId IN :categoryIds)
-    AND (
-         :pattern IS NULL
-      OR b.title ILIKE :pattern
-      OR a.fullName ILIKE :pattern
-    )
-  ORDER BY b.purchasePrice ASC
-""")
-    Page<Book> findFilteredSortedAsc(
-            @Param("genreIds")   List<Integer> genreIds,
-            @Param("categoryIds")List<Integer> categoryIds,
-            @Param("pattern")    String pattern,
-            Pageable pageable
-    );
 
     @Query("""
   SELECT DISTINCT b
@@ -47,9 +26,8 @@ public interface BookRepository extends JpaRepository<Book, Integer>{
       OR b.title ILIKE :pattern
       OR a.fullName ILIKE :pattern
     )
-  ORDER BY b.purchasePrice DESC
 """)
-    Page<Book> findFilteredSortedDesc(
+    Page<Book> findFiltered(
             @Param("genreIds")   List<Integer> genreIds,
             @Param("categoryIds")List<Integer> categoryIds,
             @Param("pattern")    String pattern,
@@ -98,63 +76,8 @@ public interface BookRepository extends JpaRepository<Book, Integer>{
       OR b.title ILIKE :pattern
       OR a.fullName ILIKE :pattern
     )
-  ORDER BY b.createdAt DESC
 """)
-    Page<Book> findForAdminSortedByCreatedAtDesc(
-            @Param("pattern") String pattern,
-            Pageable pageable
-    );
-
-    @Query("""
-  SELECT DISTINCT b
-    FROM Book b
-    LEFT JOIN BookGenre bg ON b.bookId = bg.bookId
-    LEFT JOIN BookCategory bc ON b.bookId = bc.bookId
-    JOIN Author a ON a.authorId = b.authorId
-  WHERE (
-         :pattern IS NULL
-      OR b.title ILIKE :pattern
-      OR a.fullName ILIKE :pattern
-    )
-  ORDER BY b.createdAt ASC
-""")
-    Page<Book> findForAdminSortedByCreatedAtAsc(
-            @Param("pattern") String pattern,
-            Pageable pageable
-    );
-
-    @Query("""
-  SELECT DISTINCT b
-    FROM Book b
-    LEFT JOIN BookGenre bg ON b.bookId = bg.bookId
-    LEFT JOIN BookCategory bc ON b.bookId = bc.bookId
-    JOIN Author a ON a.authorId = b.authorId
-  WHERE (
-         :pattern IS NULL
-      OR b.title ILIKE :pattern
-      OR a.fullName ILIKE :pattern
-    )
-  ORDER BY b.updatedAt DESC
-""")
-    Page<Book> findForAdminSortedByUpdatedAtDesc(
-            @Param("pattern") String pattern,
-            Pageable pageable
-    );
-
-    @Query("""
-  SELECT DISTINCT b
-    FROM Book b
-    LEFT JOIN BookGenre bg ON b.bookId = bg.bookId
-    LEFT JOIN BookCategory bc ON b.bookId = bc.bookId
-    JOIN Author a ON a.authorId = b.authorId
-  WHERE (
-         :pattern IS NULL
-      OR b.title ILIKE :pattern
-      OR a.fullName ILIKE :pattern
-    )
-  ORDER BY b.updatedAt ASC
-""")
-    Page<Book> findForAdminSortedByUpdatedAtAsc(
+    Page<Book> findForAdmin(
             @Param("pattern") String pattern,
             Pageable pageable
     );

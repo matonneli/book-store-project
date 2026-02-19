@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useBookAdmin } from '../contexts/BookAdminContext';
@@ -7,6 +7,7 @@ import AddBookModal from "../components/AddBookModal";
 import EditBookModal from '../components/EditBookModal';
 import AddAuthorModal from '../components/AddAuthorModal';
 import EditAuthorModal from '../components/EditAuthorModal';
+import InactivityTimer from '../components/InactivityTimer';
 import { ToastProvider, useToast } from '../components/ToastSystem';
 
 const BookRow = React.memo(({ book, onEdit }) => {
@@ -59,25 +60,14 @@ BookRow.displayName = 'BookRow';
 
 const ManageBooksPageContent = () => {
     const {
-        books,
-        loading,
-        error,
-        currentPage,
-        totalPages,
-        totalElements,
-        searchQuery,
-        sortBy,
-        sortOrder,
-        handleSearchChange,
-        handleSortByChange,
-        handleSortOrderChange,
-        handlePageChange,
+        books, loading, error,
+        currentPage, totalPages, totalElements,
+        searchQuery, sortBy, sortOrder,
+        handleSearchChange, handleSortByChange, handleSortOrderChange, handlePageChange,
     } = useBookAdmin();
 
     const { isReady: refsReady } = useReferences();
-
-    const navigate = useNavigate();
-    const { updateLastActivity, logout, getRemainingTime } = useAuth();
+    const { updateLastActivity } = useAuth();
     const toast = useToast();
 
     const [showAddBookModal, setShowAddBookModal] = useState(false);
@@ -86,51 +76,13 @@ const ManageBooksPageContent = () => {
     const [showAddAuthorModal, setShowAddAuthorModal] = useState(false);
     const [showEditAuthorModal, setShowEditAuthorModal] = useState(false);
 
-    const thirtyMinWarningShown = useRef(false);
-    const fiveMinWarningShown = useRef(false);
-
-    useEffect(() => {
-        const checkSessionTime = setInterval(() => {
-            const timeLeft = getRemainingTime();
-            const minutesLeft = Math.floor(timeLeft / 1000 / 60);
-
-            if (minutesLeft <= 30 && minutesLeft > 5 && !thirtyMinWarningShown.current) {
-                toast.warning('Your session will expire in 30 minutes. Continue working to automatically extend it.', 8000);
-                thirtyMinWarningShown.current = true;
-            }
-
-            if (minutesLeft <= 5 && minutesLeft > 0 && !fiveMinWarningShown.current) {
-                toast.error('⚠️ Warning! Your session will expire in 5 minutes. Perform any action to extend the session or log in again.', 10000);
-                fiveMinWarningShown.current = true;
-            }
-
-            if (minutesLeft > 30) {
-                thirtyMinWarningShown.current = false;
-                fiveMinWarningShown.current = false;
-            } else if (minutesLeft > 5) {
-                fiveMinWarningShown.current = false;
-            }
-
-            if (timeLeft <= 0) {
-                clearInterval(checkSessionTime);
-                toast.error('Your session has expired. Please log in again.', 5000);
-                setTimeout(() => {
-                    logout();
-                    navigate('/login');
-                }, 2000);
-            }
-        }, 10000); // Проверка каждые 10 секунд
-
-        return () => clearInterval(checkSessionTime);
-    }, [getRemainingTime, logout, navigate, toast]);
-
     const handleAddBook = () => {
         setShowAddBookModal(true);
         updateLastActivity('addBookAdmin');
     };
 
     const handleBookAdded = () => {
-        toast.success(`New book created successfully!`);
+        toast.success('New book created successfully!');
     };
 
     const handleAddAuthor = () => {
@@ -158,9 +110,7 @@ const ManageBooksPageContent = () => {
     };
 
     const handleBackToDashboard = () => {
-        console.log('Navigating to dashboard...');
         updateLastActivity('navigateToDashboard');
-        // Принудительная перезагрузка страницы
         window.location.href = '/dashboard';
     };
 
@@ -179,48 +129,50 @@ const ManageBooksPageContent = () => {
 
     return (
         <div className="container mt-4">
+            <InactivityTimer />
+
             {/* Header */}
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2>Manage Books</h2>
                     <p className="text-muted mb-0">Manage your bookstore inventory</p>
                 </div>
-                <button
-                    className="btn btn-secondary"
-                    onClick={handleBackToDashboard}
-                >
+                <button className="btn btn-secondary" onClick={handleBackToDashboard}>
                     ← Back to Dashboard
                 </button>
             </div>
 
+            {/* Filters */}
             <div className="card mb-4">
                 <div className="card-body">
-                    <div className="row g-3 align-items-center">
+                    <div className="row g-3">
                         <div className="col-md-4">
-                            <div className="input-group">
-                                <span className="input-group-text">
-                                    <i className="fas fa-search"></i>
-                                </span>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Search by title or author..."
-                                    value={searchQuery}
-                                    onChange={(e) => handleSearchChange(e.target.value)}
-                                />
-                            </div>
+                            <label className="form-label">Search</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Search books..."
+                                value={searchQuery}
+                                onChange={(e) => handleSearchChange(e.target.value)}
+                            />
                         </div>
                         <div className="col-md-3">
+                            <label className="form-label">Sort By</label>
                             <select
                                 className="form-select"
                                 value={sortBy}
                                 onChange={(e) => handleSortByChange(e.target.value)}
                             >
-                                <option value="created_at">Created At</option>
-                                <option value="updated_at">Updated At</option>
+                                <option value="title">Title</option>
+                                <option value="createdAt">Created At</option>
+                                <option value="updatedAt">Updated At</option>
+                                <option value="purchasePrice">Purchase Price</option>
+                                <option value="rentalPrice">Rental Price</option>
+                                <option value="stockQuantity">Stock</option>
                             </select>
                         </div>
                         <div className="col-md-3">
+                            <label className="form-label">Order</label>
                             <select
                                 className="form-select"
                                 value={sortOrder}
@@ -231,7 +183,7 @@ const ManageBooksPageContent = () => {
                             </select>
                         </div>
                         <div className="col-md-2">
-                            {loading && <span className="spinner-border spinner-border-sm text-primary"></span>}
+                            {loading && <span className="spinner-border spinner-border-sm text-primary mt-4 d-block"></span>}
                         </div>
                     </div>
                 </div>
@@ -240,32 +192,19 @@ const ManageBooksPageContent = () => {
             {/* Action Buttons */}
             <div className="card mb-4">
                 <div className="card-body">
-                    <div className="row">
-                        <div className="col-md-12">
-                            <button
-                                className="btn btn-primary me-3"
-                                onClick={handleAddBook}
-                            >
-                                Add New Book
-                            </button>
-                            <button
-                                className="btn btn-info me-3"
-                                onClick={handleAddAuthor}
-                            >
-                                Add New Author
-                            </button>
-                            <button
-                                className="btn btn-warning"
-                                onClick={handleEditAuthor}
-                            >
-                                Edit Author
-                            </button>
-                        </div>
-                    </div>
+                    <button className="btn btn-primary me-3" onClick={handleAddBook}>
+                        Add New Book
+                    </button>
+                    <button className="btn btn-info me-3" onClick={handleAddAuthor}>
+                        Add New Author
+                    </button>
+                    <button className="btn btn-warning" onClick={handleEditAuthor}>
+                        Edit Author
+                    </button>
                 </div>
             </div>
 
-            {/* Error Display */}
+            {/* Error */}
             {error && (
                 <div className="alert alert-danger mb-4">
                     <strong>Error:</strong> {error}
@@ -301,11 +240,8 @@ const ManageBooksPageContent = () => {
                                 <tbody>
                                 {books.length === 0 ? (
                                     <tr>
-                                        <td colSpan="13" className="text-center py-4">
-                                            <div className="text-muted">
-                                                <i className="fas fa-book-open fa-2x mb-2"></i>
-                                                <p>No books found</p>
-                                            </div>
+                                        <td colSpan="13" className="text-center py-4 text-muted">
+                                            No books found
                                         </td>
                                     </tr>
                                 ) : (
@@ -335,31 +271,21 @@ const ManageBooksPageContent = () => {
                                             Previous
                                         </button>
                                     </li>
-
                                     {[...Array(Math.min(5, totalPages))].map((_, index) => {
                                         let pageNum;
-                                        if (totalPages <= 5) {
-                                            pageNum = index;
-                                        } else if (currentPage < 3) {
-                                            pageNum = index;
-                                        } else if (currentPage >= totalPages - 3) {
-                                            pageNum = totalPages - 5 + index;
-                                        } else {
-                                            pageNum = currentPage - 2 + index;
-                                        }
+                                        if (totalPages <= 5) pageNum = index;
+                                        else if (currentPage < 3) pageNum = index;
+                                        else if (currentPage >= totalPages - 3) pageNum = totalPages - 5 + index;
+                                        else pageNum = currentPage - 2 + index;
 
                                         return (
                                             <li key={pageNum} className={`page-item ${currentPage === pageNum ? 'active' : ''}`}>
-                                                <button
-                                                    className="page-link"
-                                                    onClick={() => handlePageChange(pageNum)}
-                                                >
+                                                <button className="page-link" onClick={() => handlePageChange(pageNum)}>
                                                     {pageNum + 1}
                                                 </button>
                                             </li>
                                         );
                                     })}
-
                                     <li className={`page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`}>
                                         <button
                                             className="page-link"
@@ -382,25 +308,19 @@ const ManageBooksPageContent = () => {
             <AddBookModal
                 show={showAddBookModal}
                 onClose={() => setShowAddBookModal(false)}
-                onBookAdded={() => {
-                    handleBookAdded();
-                    setShowAddBookModal(false);
-                }}
+                onBookAdded={() => { handleBookAdded(); setShowAddBookModal(false); }}
             />
-
             <EditBookModal
                 bookId={selectedBookId}
                 show={showEditBookModal}
                 onClose={() => setShowEditBookModal(false)}
                 onBookUpdated={handleBookUpdated}
             />
-
             <AddAuthorModal
                 show={showAddAuthorModal}
                 onClose={() => setShowAddAuthorModal(false)}
                 onAuthorAdded={handleAuthorAdded}
             />
-
             <EditAuthorModal
                 show={showEditAuthorModal}
                 onClose={() => setShowEditAuthorModal(false)}
@@ -409,12 +329,10 @@ const ManageBooksPageContent = () => {
     );
 };
 
-const ManageBooksPage = () => {
-    return (
-        <ToastProvider>
-            <ManageBooksPageContent />
-        </ToastProvider>
-    );
-};
+const ManageBooksPage = () => (
+    <ToastProvider>
+        <ManageBooksPageContent />
+    </ToastProvider>
+);
 
 export default ManageBooksPage;

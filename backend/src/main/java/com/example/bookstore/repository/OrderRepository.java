@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 public interface OrderRepository extends JpaRepository<Orders, Integer> {
     @Query("SELECT o FROM Orders o WHERE o.userId = :userId ORDER BY o.createdAt DESC")
     Page<Orders> findByUserIdOrderByCreatedAtDesc(@Param("userId") Integer userId, Pageable pageable);
@@ -32,5 +35,11 @@ public interface OrderRepository extends JpaRepository<Orders, Integer> {
             @Param("status") OrderStatus status,
             @Param("pickupPointId") Integer pickupPointId,
             Pageable pageable
+    );
+
+    @Query("SELECT o FROM Orders o WHERE o.createdAt < :deadlineDate AND o.status IN :statuses")
+    List<Orders> findExpiredOrdersReadyForPickup(
+            @Param("deadlineDate") LocalDateTime deadlineDate,
+            @Param("statuses") List<OrderStatus> statuses
     );
 }

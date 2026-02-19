@@ -1,22 +1,27 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useReferences } from '../contexts/AdminReferenceContext';
 import { ToastProvider } from '../components/ToastSystem';
+import InactivityTimer from '../components/InactivityTimer';
 
 import AdminOrdersView from '../components/AdminOrdersView';
 import WorkerOrdersView from '../components/WorkerOrdersView';
 
 const ManageOrdersPageContent = () => {
-    const navigate = useNavigate();
-    const { userInfo, isLoading } = useAuth();
+    const { userInfo, isLoading, updateLastActivity } = useAuth();
     const { isReady } = useReferences();
 
+    const handleBackToDashboard = () => {
+        updateLastActivity('navigateToDashboard');
+        window.location.href = '/dashboard';
+    };
 
     if (isLoading || !isReady) {
         return (
             <div className="d-flex justify-content-center mt-5">
-                <div className="spinner-border text-primary" />
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
             </div>
         );
     }
@@ -25,16 +30,20 @@ const ManageOrdersPageContent = () => {
 
     return (
         <div className="container mt-4">
+            <InactivityTimer />
+
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>📦 Order Management</h2>
+                <div>
+                    <h2>Order Management</h2>
+                    <p className="text-muted mb-0">View and manage customer orders</p>
+                </div>
                 <button
                     className="btn btn-secondary"
-                    onClick={() => navigate('/dashboard')}
+                    onClick={handleBackToDashboard}
                 >
                     ← Back to Dashboard
                 </button>
             </div>
-
 
             {userRole === 'ADMIN' ? (
                 <AdminOrdersView />

@@ -61,10 +61,19 @@ public class OrderController {
     }
 
     @PostMapping("/{orderId}/confirm-payment")
-    public ResponseEntity<OrderDetailDto> confirmPayment( // ИЗМЕНЕНО: Orders -> OrderDetailDto
+    public ResponseEntity<OrderDetailDto> confirmPayment(
                                                           @PathVariable Integer orderId,
                                                           @RequestHeader("Authorization") String token) {
         Orders order = orderService.confirmPayment(orderId);
+        OrderDetailDto orderDetail = orderService.getOrderDetails(order.getOrderId(), token);
+        return ResponseEntity.ok(orderDetail);
+    }
+
+    @PostMapping("/{orderId}/cancel")
+    public ResponseEntity<OrderDetailDto> cancelOrder(
+            @PathVariable Integer orderId,
+            @RequestHeader("Authorization") String token) {
+        Orders order = orderService.cancelOrderByUser(orderId, token);
         OrderDetailDto orderDetail = orderService.getOrderDetails(order.getOrderId(), token);
         return ResponseEntity.ok(orderDetail);
     }

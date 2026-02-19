@@ -145,7 +145,10 @@ const AdminOrdersView = () => {
 
         setOpenDropdown(null);
 
-        if (currentStatus === 'CANCELLED') {
+        // Check if order is already cancelled
+        const cancelledStatuses = ['CANCELLED', 'CANCELLED_BY_USER_PAID', 'CANCELLED_BY_USER_UNPAID',
+            'CANCELLED_BY_DEADLINE_PAID', 'CANCELLED_BY_DEADLINE_UNPAID'];
+        if (cancelledStatuses.includes(currentStatus)) {
             showToast('Cannot change status of cancelled order', 'error');
             return;
         }
@@ -230,6 +233,10 @@ const AdminOrdersView = () => {
             'DELIVERED': 'bg-success',
             'DELIVERED_AND_PAID': 'bg-success',
             'CANCELLED': 'bg-danger',
+            'CANCELLED_BY_USER_PAID': 'bg-danger',
+            'CANCELLED_BY_USER_UNPAID': 'bg-danger',
+            'CANCELLED_BY_DEADLINE_PAID': 'bg-danger',
+            'CANCELLED_BY_DEADLINE_UNPAID': 'bg-danger',
             'REFUNDED': 'bg-danger',
             'RETURNED': 'bg-secondary'
         };
@@ -245,6 +252,12 @@ const AdminOrdersView = () => {
             hour: '2-digit',
             minute: '2-digit'
         });
+    };
+
+    const isCancelledStatus = (status) => {
+        const cancelledStatuses = ['CANCELLED', 'CANCELLED_BY_USER_PAID', 'CANCELLED_BY_USER_UNPAID',
+            'CANCELLED_BY_DEADLINE_PAID', 'CANCELLED_BY_DEADLINE_UNPAID'];
+        return cancelledStatuses.includes(status);
     };
 
     const renderOrderDetails = (orderId) => {
@@ -605,13 +618,14 @@ const AdminOrdersView = () => {
                                     <th>Created</th>
                                     <th>Paid At</th>
                                     <th>Delivered At</th>
+                                    <th>Refunded At</th>
                                     <th>Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {orders.map(order => (
                                     <React.Fragment key={order.orderId}>
-                                        <tr style={{ backgroundColor: order.status === 'CANCELLED' ? '#f8f9fa' : 'transparent' }}>
+                                        <tr style={{ backgroundColor: isCancelledStatus(order.status) ? '#f8f9fa' : 'transparent' }}>
                                             <td>
                                                 <button
                                                     className="btn btn-sm btn-link p-0 text-decoration-none"
@@ -666,15 +680,20 @@ const AdminOrdersView = () => {
                                                 </small>
                                             </td>
                                             <td>
+                                                <small className={order.refundedAt ? 'text-info' : 'text-muted'}>
+                                                    {formatDate(order.refundedAt)}
+                                                </small>
+                                            </td>
+                                            <td>
                                                 <div className="position-relative" ref={openDropdown === order.orderId ? dropdownRef : null}>
                                                     <button
-                                                        className={`btn btn-sm ${order.status === 'CANCELLED' ? 'btn-outline-secondary' : 'btn-primary'}`}
-                                                        onClick={() => order.status === 'CANCELLED' ? handleStatusUpdate(order.orderId, order.status, null) : toggleDropdown(order.orderId)}
+                                                        className={`btn btn-sm ${isCancelledStatus(order.status) ? 'btn-outline-secondary' : 'btn-primary'}`}
+                                                        onClick={() => isCancelledStatus(order.status) ? handleStatusUpdate(order.orderId, order.status, null) : toggleDropdown(order.orderId)}
                                                         type="button"
                                                     >
                                                         Change Status ▾
                                                     </button>
-                                                    {openDropdown === order.orderId && order.status !== 'CANCELLED' && (
+                                                    {openDropdown === order.orderId && !isCancelledStatus(order.status) && (
                                                         <div
                                                             className="position-absolute bg-white border rounded shadow-sm"
                                                             style={{

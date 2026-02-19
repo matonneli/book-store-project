@@ -6,18 +6,17 @@ import { ToastProvider } from './contexts/ToastSystem';
 
 import HomePage from './pages/HomePage';
 import UserLoginForm from './components/UserLoginForm';
-import AdminLoginForm from './components/AdminLoginForm';
 import ProtectedRoute from './components/ProtectedRoute';
 import UserPage from './pages/userPage/UserPage';
 import BookDetailPage from './pages/bookDetailPage/BookDetailPage';
 import UserRegisterForm from "./components/UserRegisterForm";
 import RegistrationSuccessPage from "./pages/RegistrationSuccessPage";
 import BookCatalogPage from "./pages/BookCatalogPage";
-import ApiTest from "./components/ApiTest";
 import LogoutSuccessPage from "./pages/LogoutSuccessPage";
 import CartPage from "./pages/CartPage.jsx";
 import CheckoutConfirmationPage from "./pages/CheckoutConfirmationPage";
 import PaymentMockPage from "./pages/PaymentMockPage";
+import RefundMockPage from "./pages/RefundMockPage";
 
 function App() {
     return (
@@ -38,7 +37,7 @@ function App() {
                             <Route path="/registration-success" element={<RegistrationSuccessPage />} />
                             <Route path="/logout-success" element={<LogoutSuccessPage />} />
                             <Route path="/apitest" element={<ApiTest />} />
-
+                            <Route path="/refund-mock" element={<RefundMockPage />} />
                         </Routes>
                     </Router>
                 </ToastProvider>

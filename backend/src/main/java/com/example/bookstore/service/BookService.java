@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,12 +59,15 @@ public class BookService {
         if (title != null && !title.isBlank()) {
             pattern = "%" + title.trim() + "%";
         }
-        boolean desc = "desc".equalsIgnoreCase(sortOrder);
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Book> bookPage = desc
-                ? bookRepository.findFilteredSortedDesc(genreIds, categoryIds, pattern, pageable)
-                : bookRepository.findFilteredSortedAsc(genreIds, categoryIds, pattern, pageable);
+        // Создаем Sort на основе направления сортировки
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder)
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+        Sort sort = Sort.by(direction, "purchasePrice");
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Book> bookPage = bookRepository.findFiltered(genreIds, categoryIds, pattern, pageable);
 
         return getStringObjectMap(bookPage);
     }
@@ -162,24 +166,29 @@ public class BookService {
             pattern = "%" + searchQuery.trim() + "%";
         }
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Book> bookPage;
-
+        // Определяем поле для сортировки
+        String sortField;
         switch (sortBy.toLowerCase()) {
             case "created_at":
-                bookPage = "desc".equalsIgnoreCase(sortOrder)
-                        ? bookRepository.findForAdminSortedByCreatedAtDesc(pattern, pageable)
-                        : bookRepository.findForAdminSortedByCreatedAtAsc(pattern, pageable);
+                sortField = "createdAt";
                 break;
             case "updated_at":
-                bookPage = "desc".equalsIgnoreCase(sortOrder)
-                        ? bookRepository.findForAdminSortedByUpdatedAtDesc(pattern, pageable)
-                        : bookRepository.findForAdminSortedByUpdatedAtAsc(pattern, pageable);
+                sortField = "updatedAt";
                 break;
             default:
-                bookPage = bookRepository.findForAdminSortedByUpdatedAtDesc(pattern, pageable);
+                sortField = "updatedAt"; // По умолчанию
                 break;
         }
+
+        // Определяем направление сортировки
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder)
+                ? Sort.Direction.DESC
+                : Sort.Direction.ASC;
+
+        Sort sort = Sort.by(direction, sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Book> bookPage = bookRepository.findForAdmin(pattern, pageable);
 
         List<AdminBookDto> adminBookDtos = bookPage.getContent().stream()
                 .map(this::convertToAdminBookDto)

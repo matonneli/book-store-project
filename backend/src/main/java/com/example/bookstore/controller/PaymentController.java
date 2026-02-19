@@ -20,4 +20,15 @@ public class PaymentController {
         Orders order = orderService.confirmPayment(orderId);
         return ResponseEntity.ok("Payment confirmed for order " + order.getOrderId());
     }
+    @PostMapping("/mock-refund")
+    public ResponseEntity<String> mockRefund(
+            @RequestParam Integer orderId,
+            @RequestHeader("Authorization") String token) {
+        Orders refundedOrder = orderService.processRefund(orderId, token);
+        return ResponseEntity.ok(
+                String.format("Refund processed successfully for order #%d. Amount: %.2f",
+                        refundedOrder.getOrderId(),
+                        refundedOrder.getTotalPrice())
+        );
+    }
 }
