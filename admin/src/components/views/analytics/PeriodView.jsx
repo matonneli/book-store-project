@@ -36,7 +36,7 @@ const PeriodView = () => {
 
     useEffect(() => {
         fetchPeriod(days);
-    }, [days]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [days]);
 
     const statusChartData = d
         ? Object.entries(d.ordersByStatus).map(([status, value]) => ({
@@ -46,7 +46,6 @@ const PeriodView = () => {
         }))
         : [];
 
-    // Format date for chart x-axis
     const revenueChartData = d?.revenueOverTime?.map(p => ({
         ...p,
         date: new Date(p.date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }),
@@ -54,7 +53,6 @@ const PeriodView = () => {
 
     return (
         <>
-            {/* ── Period toggle ── */}
             <div className="d-flex align-items-center gap-3 mb-4">
                 <span className="text-muted small fw-semibold">Period:</span>
                 <div className="btn-group" role="group">
@@ -85,7 +83,6 @@ const PeriodView = () => {
 
             {d && (
                 <>
-                    {/* ── KPI row ── */}
                     <SectionTitle>Key Metrics — {PERIOD_LABELS[days].label}</SectionTitle>
                     <div className="row mb-4">
                         <KpiCard label="Revenue"       value={fmtZl(d.revenue)}      icon="" variant="success" />
@@ -150,7 +147,6 @@ const PeriodView = () => {
 
                     <hr className="my-3" />
 
-                    {/* ── Revenue chart ── */}
                     <SectionTitle>Revenue & Refunds Over Time</SectionTitle>
                     <div className="row mb-4">
                         <div className="col-12 mb-3">
@@ -184,7 +180,6 @@ const PeriodView = () => {
 
                     <hr className="my-3" />
 
-                    {/* ── Orders & Books ── */}
                     <SectionTitle>Orders & Books</SectionTitle>
                     <div className="row mb-4">
                         <div className="col-md-5 mb-3">

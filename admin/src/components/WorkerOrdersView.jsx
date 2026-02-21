@@ -48,12 +48,9 @@ const WorkerOrdersView = ({ pickUpPoint }) => {
     useEffect(() => {
         if (!isReady) return;
 
-        // Worker sees only their pickup point - backend filters automatically
         fetchOrders({
             ...filters
-            // pickupPointId is NOT passed - backend uses worker's pickUpPointId
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters, isReady]);
 
     const loadOrderDetails = async (orderId) => {
@@ -169,7 +166,6 @@ const WorkerOrdersView = ({ pickUpPoint }) => {
 
         if (result.success) {
             showToast(`Order #${orderId} status updated to ${formatOrderStatus(newStatus)}`, 'success');
-            // Worker sees only their pickup point - no need to pass pickupPointId
             await fetchOrders({
                 ...filters
             });
@@ -495,7 +491,6 @@ const WorkerOrdersView = ({ pickUpPoint }) => {
 
     return (
         <div>
-            {/* Pickup Point Info Banner */}
             {pickUpPoint && (
                 <div className="alert alert-info mb-3">
                     <div className="d-flex align-items-center">
@@ -509,7 +504,6 @@ const WorkerOrdersView = ({ pickUpPoint }) => {
                 </div>
             )}
 
-            {/* Filters Card */}
             <div className="card mb-3">
                 <div className="card-header">
                     <h6 className="mb-0">Search & Filters</h6>

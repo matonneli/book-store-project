@@ -86,7 +86,7 @@ public class OrderAutoStatusService {
         orderItemRepository.saveAll(orderItems);
     }
 
-    @Scheduled(fixedDelay = 600000) // 10 mins = 600000 мс
+    @Scheduled(fixedDelay = 600000)
     @Transactional
     public void markOverdueRentals() {
         log.info("Starting scheduled task: markOverdueRentals");

@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Use ref to avoid stale closure in setInterval
     const lastActivityRef = useRef(lastActivityTime);
     const isAuthenticatedRef = useRef(isAuthenticated);
 
@@ -100,7 +99,6 @@ export const AuthProvider = ({ children }) => {
         }
     }, [navigate]);
 
-    // Stable getRemainingTime using ref — no dependency on lastActivityTime state
     const getRemainingTime = useCallback(() => {
         const elapsed = Date.now() - lastActivityRef.current;
         return Math.max(0, 60 * 60 * 1000 - elapsed);

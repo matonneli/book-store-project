@@ -27,21 +27,12 @@ public class AdminAnalyticsController {
         this.adminAuthService = adminAuthService;
     }
 
-    /**
-     * GET /api/analytics/overview
-     * All-time statistics. ADMIN only.
-     */
     @GetMapping("/overview")
     public ResponseEntity<AnalyticsOverallDto> getOverview(HttpSession session) {
         adminAuthService.requireAdminRole(session);
         return ResponseEntity.ok(service.getOverall());
     }
 
-    /**
-     * GET /api/analytics/period?days=7
-     * GET /api/analytics/period?days=30
-     * Period statistics. ADMIN only.
-     */
     @GetMapping("/period")
     public ResponseEntity<AnalyticsPeriodDto> getPeriod(
             @RequestParam(defaultValue = "30") int days,

@@ -34,22 +34,19 @@ const PickupPointView = () => {
 
     const isWorker = userInfo?.role === 'WORKER';
 
-    // For worker — always their own point. For admin — selector.
     const [selectedId, setSelectedId] = useState(null);
 
     useEffect(() => {
         if (isWorker && userInfo?.pickUpPoint?.pickupPointId) {
-            // Worker: auto-load their own point
             const id = userInfo.pickUpPoint.pickupPointId;
             setSelectedId(id);
             fetchPickupPoint(id);
         } else if (!isWorker && pickUpPoints.length > 0 && !selectedId) {
-            // Admin: default to first pickup point
             const id = pickUpPoints[0].pickupPointId;
             setSelectedId(id);
             fetchPickupPoint(id);
         }
-    }, [isWorker, userInfo, pickUpPoints]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [isWorker, userInfo, pickUpPoints]);
 
     const handleSelectPoint = (id) => {
         setSelectedId(id);
@@ -66,7 +63,6 @@ const PickupPointView = () => {
 
     return (
         <>
-            {/* ── Point selector (admin only) ── */}
             {!isWorker && (
                 <div className="d-flex align-items-center gap-3 mb-4">
                     <span className="text-muted small fw-semibold">Pickup Point:</span>
@@ -87,7 +83,6 @@ const PickupPointView = () => {
                 </div>
             )}
 
-            {/* Worker sees their point name as title */}
             {isWorker && d && (
                 <div className="d-flex align-items-center gap-2 mb-4">
                     <span className="badge bg-primary fs-6">{d.pickupPointName}</span>
@@ -112,7 +107,6 @@ const PickupPointView = () => {
 
             {d && (
                 <>
-                    {/* ── KPI row ── */}
                     <SectionTitle>Key Metrics — {d.pickupPointName}</SectionTitle>
                     <div className="row mb-4">
                         <KpiCard label="Total Orders"    value={d.totalOrders}             icon="📦" variant="primary" />
@@ -153,7 +147,6 @@ const PickupPointView = () => {
 
                     <hr className="my-3" />
 
-                    {/* ── Charts ── */}
                     <SectionTitle>Orders & Books</SectionTitle>
                     <div className="row mb-4">
                         <div className="col-md-5 mb-3">

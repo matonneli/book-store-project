@@ -208,7 +208,6 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
                     const errorData = await response.json();
                     errorMessage = errorData.message || errorMessage;
                 } catch {
-                    // ignore
                 }
                 if (response.status === 401) {
                     errorMessage = 'Session expired. Please login again.';
@@ -270,7 +269,6 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
                     <Alert variant="danger" className="mb-4">{error}</Alert>
                 ) : (
                     <Form>
-                        {/* Basic Information */}
                         <div className="border rounded p-3 mb-4 bg-light">
                             <h6 className="mb-3">Basic Information</h6>
 

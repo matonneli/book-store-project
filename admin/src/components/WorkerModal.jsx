@@ -54,7 +54,6 @@ const WorkerModal = ({ show, onClose, onSubmit, editingWorker, loading }) => {
             newErrors.fullName = 'Full name is required';
         }
 
-        // Email validation
         if (!formData.email.trim()) {
             newErrors.email = 'Email is required';
         } else if (!/^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(formData.email)) {

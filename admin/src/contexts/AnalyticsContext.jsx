@@ -54,7 +54,6 @@ export const AnalyticsProvider = ({ children }) => {
         }
     }, []);
 
-    // Always refetches — pickup point can change via selector
     const fetchPickupPoint = useCallback(async (pickupPointId) => {
         setLoadingPickupPoint(true);
         setError(null);

@@ -103,11 +103,7 @@ public class AdminAnalyticsPickupPointRepository {
                 pickupPointId, TOP_BOOKS_LIMIT);
     }
 
-    /**
-     * Average time in hours between paid_at and delivered_at.
-     * Only for orders that are DELIVERED or DELIVERED_AND_PAID
-     * and have both timestamps filled.
-     */
+
     public Double getAvgDeliveryHours(int pickupPointId) {
         String sql = """
             SELECT AVG(EXTRACT(EPOCH FROM (delivered_at - paid_at)) / 3600)

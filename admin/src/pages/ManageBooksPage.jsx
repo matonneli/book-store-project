@@ -131,7 +131,6 @@ const ManageBooksPageContent = () => {
         <div className="container mt-4">
             <InactivityTimer />
 
-            {/* Header */}
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2>Manage Books</h2>
@@ -142,7 +141,6 @@ const ManageBooksPageContent = () => {
                 </button>
             </div>
 
-            {/* Filters */}
             <div className="card mb-4">
                 <div className="card-body">
                     <div className="row g-3">
@@ -189,7 +187,6 @@ const ManageBooksPageContent = () => {
                 </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="card mb-4">
                 <div className="card-body">
                     <button className="btn btn-primary me-3" onClick={handleAddBook}>
@@ -204,14 +201,12 @@ const ManageBooksPageContent = () => {
                 </div>
             </div>
 
-            {/* Error */}
             {error && (
                 <div className="alert alert-danger mb-4">
                     <strong>Error:</strong> {error}
                 </div>
             )}
 
-            {/* Table */}
             {!error && (
                 <div className="card shadow-sm">
                     <div className="card-header bg-white">

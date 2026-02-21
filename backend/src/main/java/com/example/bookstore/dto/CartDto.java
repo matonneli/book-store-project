@@ -5,13 +5,12 @@ import java.util.List;
 
 public class CartDto {
     private List<CartItemDto> items;
-    private BigDecimal totalAmount;        //sum of all item prices
-    private BigDecimal totalDiscount;      //sum of all discounts applied
-    private Integer itemsCount;            //total number of items
-    private final Integer maxItems = 4;    //maximum items allowed
-    private Integer remainingSlots;        //maxItems - itemsCount
+    private BigDecimal totalAmount;
+    private BigDecimal totalDiscount;
+    private Integer itemsCount;
+    private final Integer maxItems = 4;
+    private Integer remainingSlots;
 
-    // Constructors
     public CartDto() {}
 
     public CartDto(List<CartItemDto> items) {
@@ -21,7 +20,6 @@ public class CartDto {
         calculateTotals();
     }
 
-    // Calculate total amount and discount from items
     private void calculateTotals() {
         if (items == null || items.isEmpty()) {
             this.totalAmount = BigDecimal.ZERO;
@@ -43,7 +41,6 @@ public class CartDto {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // Getters and Setters
     public List<CartItemDto> getItems() {
         return items;
     }

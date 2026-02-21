@@ -13,14 +13,13 @@ public class CartItemDto {
     private String authorName;
     private List<String> imageUrls = new ArrayList<>();
     private ItemType type;
-    private BigDecimal price;              //calculated final price
-    private BigDecimal originalPrice;      //price before discount
+    private BigDecimal price;
+    private BigDecimal originalPrice;
     private BigDecimal discountPercent;
-    private Integer rentalDays;            //null for BUY type
+    private Integer rentalDays;
     private Integer stockQuantity;
     private LocalDateTime addedAt;
-    private boolean available = true;      //false if out of stock
-
+    private boolean available = true;
     public CartItemDto() {}
 
     public Integer getCartItemId() {

@@ -11,7 +11,6 @@ const AnalyticsPageContent = () => {
     const isWorker = userInfo?.role === 'WORKER';
     const isAdmin  = userInfo?.role === 'ADMIN';
 
-    // Workers go straight to pickup point tab
     const [activeTab, setActiveTab] = useState(isWorker ? 'pickup' : 'overall');
 
     const handleBack = () => {
@@ -46,9 +45,7 @@ const AnalyticsPageContent = () => {
                 </div>
             </div>
 
-            {/* ── Nav tabs ── */}
             <ul className="nav nav-tabs mb-4">
-                {/* Overall and Period — admin only */}
                 {isAdmin && (
                     <>
                         <li className="nav-item">
@@ -56,7 +53,7 @@ const AnalyticsPageContent = () => {
                                 className={`nav-link ${activeTab === 'overall' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('overall')}
                             >
-                                📊 Overall
+                                Overall
                             </button>
                         </li>
                         <li className="nav-item">
@@ -64,24 +61,22 @@ const AnalyticsPageContent = () => {
                                 className={`nav-link ${activeTab === 'period' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('period')}
                             >
-                                📅 By Period
+                                By Period
                             </button>
                         </li>
                     </>
                 )}
 
-                {/* Pickup point — both admin and worker */}
                 <li className="nav-item">
                     <button
                         className={`nav-link ${activeTab === 'pickup' ? 'active' : ''}`}
                         onClick={() => setActiveTab('pickup')}
                     >
-                        📍 Pickup Point
+                        Pickup Point
                     </button>
                 </li>
             </ul>
 
-            {/* ── Tab content ── */}
             {activeTab === 'overall' && <OverallView />}
             {activeTab === 'period'  && <PeriodView />}
             {activeTab === 'pickup'  && <PickupPointView />}

@@ -13,7 +13,6 @@ public class AdminAnalyticsRepository {
 
     private final JdbcTemplate jdbc;
 
-    // Statuses considered as successfully paid/completed
     private static final String PAID_STATUSES =
             "'PAID','DELIVERED_AND_PAID','DELIVERED','READY_FOR_PICKUP','READY_FOR_PICKUP_UNPAID'";
 
@@ -21,7 +20,6 @@ public class AdminAnalyticsRepository {
         this.jdbc = jdbc;
     }
 
-    // ─── OVERALL ───────────────────────────────────────────────────────────────
 
     public BigDecimal getTotalRevenue() {
         String sql = """
@@ -162,7 +160,6 @@ public class AdminAnalyticsRepository {
                         rs.getLong("orders")));
     }
 
-    // ─── PERIOD ────────────────────────────────────────────────────────────────
 
     public BigDecimal getRevenueForPeriod(int days) {
         String sql = """

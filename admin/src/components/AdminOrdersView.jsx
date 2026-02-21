@@ -54,7 +54,6 @@ const AdminOrdersView = () => {
             ...filters,
             pickupPointId
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters, activeTab, isReady]);
 
     const loadOrderDetails = async (orderId) => {
@@ -141,11 +140,9 @@ const AdminOrdersView = () => {
     };
 
     const handleStatusUpdate = async (orderId, currentStatus, newStatus) => {
-        console.log('handleStatusUpdate called:', { orderId, currentStatus, newStatus });
 
         setOpenDropdown(null);
 
-        // Check if order is already cancelled
         const cancelledStatuses = ['CANCELLED', 'CANCELLED_BY_USER_PAID', 'CANCELLED_BY_USER_UNPAID',
             'CANCELLED_BY_DEADLINE_PAID', 'CANCELLED_BY_DEADLINE_UNPAID'];
         if (cancelledStatuses.includes(currentStatus)) {
@@ -164,9 +161,7 @@ const AdminOrdersView = () => {
 
         if (!confirmed) return;
 
-        console.log('Calling updateOrderStatus...');
         const result = await updateOrderStatus(orderId, newStatus);
-        console.log('updateOrderStatus result:', result);
 
         if (result.success) {
             showToast(`Order #${orderId} status updated to ${formatOrderStatus(newStatus)}`, 'success');
@@ -189,7 +184,6 @@ const AdminOrdersView = () => {
     };
 
     const handleItemStatusUpdate = async (orderId, orderItemId, currentStatus, newStatus, orderStatus) => {
-        console.log('handleItemStatusUpdate called:', { orderItemId, currentStatus, newStatus });
         setOpenItemDropdown(null);
         if (orderStatus === 'CANCELLED') {
             showToast('Cannot change status of items in cancelled order', 'error');
@@ -204,9 +198,7 @@ const AdminOrdersView = () => {
         );
 
         if (!confirmed) return;
-        console.log('Calling updateOrderItemStatus...');
         const result = await updateOrderItemStatus(orderItemId, newStatus);
-        console.log('updateOrderItemStatus result:', result);
 
         if (result.success) {
             showToast(`Order item #${orderItemId} status updated to ${formatItemStatus(newStatus)}`, 'success');

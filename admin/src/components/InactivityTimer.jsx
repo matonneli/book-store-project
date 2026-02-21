@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
-const WARNING_THRESHOLD = 5 * 60 * 1000; // 5 minutes
-const CHECK_INTERVAL = 30 * 1000;         // check every 30 seconds
+const WARNING_THRESHOLD = 5 * 60 * 1000;
+const CHECK_INTERVAL = 30 * 1000;
 
 const InactivityTimer = () => {
     const { getRemainingTime, updateLastActivity, checkAuthStatus } = useAuth();

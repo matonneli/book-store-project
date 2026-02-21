@@ -5,7 +5,7 @@ public class UpdateWorkerRequest {
     private String fullName;
     private String email;
     private Integer pickupPointId;
-    private String password; // пустое = не меняем, заполненное = меняем
+    private String password;
 
     public UpdateWorkerRequest() {}
 

@@ -10,7 +10,6 @@ import { fmtZl, KpiCard, SectionTitle, ChartCard, ChartTooltip } from './Analyti
 
 const legendFormatter = (v) => <span style={{ fontSize: 11 }}>{v}</span>;
 
-// Map status enum → display name + color
 const STATUS_META = {
     CREATED:                    { label: 'Created',              color: '#6c757d' },
     PAID:                       { label: 'Paid',                 color: '#0d6efd' },
@@ -62,7 +61,6 @@ const OverallView = () => {
     const successRate = totalOrders ? ((completedOrders / totalOrders) * 100).toFixed(1) : 0;
     const cancellationRate = totalOrders ? ((cancelledOrders / totalOrders) * 100).toFixed(1) : 0;
 
-    // Convert ordersByStatus map → array for PieChart
     const statusChartData = Object.entries(d.ordersByStatus).map(([status, value]) => ({
         name: STATUS_META[status]?.label || status,
         value,
@@ -77,7 +75,6 @@ const OverallView = () => {
 
     return (
         <>
-            {/* ── KPI row ── */}
             <SectionTitle>Key Metrics — All Time</SectionTitle>
             <div className="row mb-4">
                 <KpiCard label="Total Revenue"   value={fmtZl(d.totalRevenue)} icon="" variant="success" />
@@ -94,7 +91,6 @@ const OverallView = () => {
 
             <hr className="my-3" />
 
-            {/* ── Orders ── */}
             <SectionTitle>Orders</SectionTitle>
             <div className="row mb-4">
                 <div className="col-md-5 mb-3">
@@ -166,7 +162,6 @@ const OverallView = () => {
 
             <hr className="my-3" />
 
-            {/* ── Books ── */}
             <SectionTitle>Books</SectionTitle>
             <div className="row mb-4">
                 <div className="col-md-4 mb-3">
@@ -233,7 +228,6 @@ const OverallView = () => {
 
             <hr className="my-3" />
 
-            {/* ── Clients ── */}
             <SectionTitle>Clients</SectionTitle>
             <div className="row mb-2">
                 <div className="col-md-12 mb-3">

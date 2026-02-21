@@ -250,7 +250,7 @@ const EditBookModal = ({ bookId, show, onClose, onBookUpdated }) => {
                     const errorData = await response.json();
                     errorMessage = errorData.message || errorMessage;
                 } catch {
-                    // ignore
+
                 }
 
                 if (response.status === 401) {

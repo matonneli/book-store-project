@@ -60,7 +60,6 @@ public class BookService {
             pattern = "%" + title.trim() + "%";
         }
 
-        // Создаем Sort на основе направления сортировки
         Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder)
                 ? Sort.Direction.DESC
                 : Sort.Direction.ASC;
@@ -166,7 +165,6 @@ public class BookService {
             pattern = "%" + searchQuery.trim() + "%";
         }
 
-        // Определяем поле для сортировки
         String sortField;
         switch (sortBy.toLowerCase()) {
             case "created_at":
@@ -180,7 +178,6 @@ public class BookService {
                 break;
         }
 
-        // Определяем направление сортировки
         Sort.Direction direction = "desc".equalsIgnoreCase(sortOrder)
                 ? Sort.Direction.DESC
                 : Sort.Direction.ASC;

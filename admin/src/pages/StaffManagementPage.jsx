@@ -209,7 +209,6 @@ const StaffManagementPage = () => {
                 </div>
             </div>
 
-            {/* Workers Table */}
             <div className="card">
                 <div className="card-body">
                     {loading && workers.length === 0 ? (

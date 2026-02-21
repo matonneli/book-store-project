@@ -23,10 +23,8 @@ public class Book {
     private LocalDateTime updatedAt;
     private BigDecimal discountPercent;
 
-    //api needed
     @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     private List<BookImage> images;
-    // Getters and Setters
     public Integer getBookId() {
         return bookId;
     }

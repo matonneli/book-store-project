@@ -1,4 +1,3 @@
-// src/components/EditAuthorModal.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { Modal, Button, Form, Spinner, ListGroup, Badge } from 'react-bootstrap';
 import { useToast } from './ToastSystem';

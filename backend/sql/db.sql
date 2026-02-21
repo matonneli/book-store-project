@@ -5,7 +5,7 @@
 -- Dumped from database version 17.0
 -- Dumped by pg_dump version 17.0
 
--- Started on 2026-02-19 18:24:01
+-- Started on 2026-02-21 16:12:33
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -87,7 +87,7 @@ CREATE SEQUENCE public.author_author_id_seq
 ALTER SEQUENCE public.author_author_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5000 (class 0 OID 0)
+-- TOC entry 5004 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: author_author_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -135,7 +135,7 @@ CREATE SEQUENCE public.book_book_id_seq
 ALTER SEQUENCE public.book_book_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5001 (class 0 OID 0)
+-- TOC entry 5005 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: book_book_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -174,7 +174,7 @@ CREATE SEQUENCE public.book_category_book_category_id_seq
 ALTER SEQUENCE public.book_category_book_category_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5002 (class 0 OID 0)
+-- TOC entry 5006 (class 0 OID 0)
 -- Dependencies: 227
 -- Name: book_category_book_category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -213,7 +213,7 @@ CREATE SEQUENCE public.book_genre_book_genre_id_seq
 ALTER SEQUENCE public.book_genre_book_genre_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5003 (class 0 OID 0)
+-- TOC entry 5007 (class 0 OID 0)
 -- Dependencies: 225
 -- Name: book_genre_book_genre_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -282,7 +282,7 @@ CREATE SEQUENCE public.cart_cart_id_seq
 ALTER SEQUENCE public.cart_cart_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5004 (class 0 OID 0)
+-- TOC entry 5008 (class 0 OID 0)
 -- Dependencies: 236
 -- Name: cart_cart_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -325,7 +325,7 @@ CREATE SEQUENCE public.cart_item_cart_item_id_seq
 ALTER SEQUENCE public.cart_item_cart_item_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5005 (class 0 OID 0)
+-- TOC entry 5009 (class 0 OID 0)
 -- Dependencies: 238
 -- Name: cart_item_cart_item_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -363,7 +363,7 @@ CREATE SEQUENCE public.category_category_id_seq
 ALTER SEQUENCE public.category_category_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5006 (class 0 OID 0)
+-- TOC entry 5010 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: category_category_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -401,12 +401,28 @@ ALTER TABLE public.category_genre ALTER COLUMN category_genre_id ADD GENERATED B
 
 
 --
+-- TOC entry 247 (class 1259 OID 57628)
+-- Name: client_client_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.client_client_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.client_client_id_seq OWNER TO postgres;
+
+--
 -- TOC entry 231 (class 1259 OID 24816)
 -- Name: client; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.client (
-    client_id integer DEFAULT nextval('public.book_book_id_seq'::regclass) NOT NULL,
+    client_id integer DEFAULT nextval('public.client_client_id_seq'::regclass) NOT NULL,
     email character varying(255),
     password character varying(255),
     first_name character varying(255),
@@ -448,7 +464,7 @@ CREATE SEQUENCE public.genre_genre_id_seq
 ALTER SEQUENCE public.genre_genre_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5007 (class 0 OID 0)
+-- TOC entry 5011 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: genre_genre_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -493,7 +509,7 @@ CREATE SEQUENCE public.order_item_order_item_id_seq
 ALTER SEQUENCE public.order_item_order_item_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5008 (class 0 OID 0)
+-- TOC entry 5012 (class 0 OID 0)
 -- Dependencies: 242
 -- Name: order_item_order_item_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -539,7 +555,7 @@ CREATE SEQUENCE public.order_order_id_seq
 ALTER SEQUENCE public.order_order_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5009 (class 0 OID 0)
+-- TOC entry 5013 (class 0 OID 0)
 -- Dependencies: 240
 -- Name: order_order_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -548,12 +564,28 @@ ALTER SEQUENCE public.order_order_id_seq OWNED BY public.orders.order_id;
 
 
 --
+-- TOC entry 248 (class 1259 OID 57635)
+-- Name: pickup_point_pickup_point_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.pickup_point_pickup_point_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.pickup_point_pickup_point_id_seq OWNER TO postgres;
+
+--
 -- TOC entry 246 (class 1259 OID 49429)
 -- Name: pickup_point; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.pickup_point (
-    pickup_point_id integer NOT NULL,
+    pickup_point_id integer DEFAULT nextval('public.pickup_point_pickup_point_id_seq'::regclass) NOT NULL,
     name character varying(255),
     address text,
     contact_phone character varying(50),
@@ -598,7 +630,7 @@ CREATE SEQUENCE public.review_review_id_seq
 ALTER SEQUENCE public.review_review_id_seq OWNER TO postgres;
 
 --
--- TOC entry 5010 (class 0 OID 0)
+-- TOC entry 5014 (class 0 OID 0)
 -- Dependencies: 229
 -- Name: review_review_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -607,7 +639,7 @@ ALTER SEQUENCE public.review_review_id_seq OWNED BY public.review.review_id;
 
 
 --
--- TOC entry 4770 (class 2604 OID 16432)
+-- TOC entry 4772 (class 2604 OID 16432)
 -- Name: author author_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -615,7 +647,7 @@ ALTER TABLE ONLY public.author ALTER COLUMN author_id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 4771 (class 2604 OID 16441)
+-- TOC entry 4773 (class 2604 OID 16441)
 -- Name: book book_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -623,7 +655,7 @@ ALTER TABLE ONLY public.book ALTER COLUMN book_id SET DEFAULT nextval('public.bo
 
 
 --
--- TOC entry 4775 (class 2604 OID 16472)
+-- TOC entry 4777 (class 2604 OID 16472)
 -- Name: book_category book_category_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -631,7 +663,7 @@ ALTER TABLE ONLY public.book_category ALTER COLUMN book_category_id SET DEFAULT 
 
 
 --
--- TOC entry 4774 (class 2604 OID 16455)
+-- TOC entry 4776 (class 2604 OID 16455)
 -- Name: book_genre book_genre_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -639,7 +671,7 @@ ALTER TABLE ONLY public.book_genre ALTER COLUMN book_genre_id SET DEFAULT nextva
 
 
 --
--- TOC entry 4779 (class 2604 OID 24857)
+-- TOC entry 4781 (class 2604 OID 24857)
 -- Name: cart cart_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -647,7 +679,7 @@ ALTER TABLE ONLY public.cart ALTER COLUMN cart_id SET DEFAULT nextval('public.ca
 
 
 --
--- TOC entry 4782 (class 2604 OID 24868)
+-- TOC entry 4784 (class 2604 OID 24868)
 -- Name: cart_item cart_item_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -655,7 +687,7 @@ ALTER TABLE ONLY public.cart_item ALTER COLUMN cart_item_id SET DEFAULT nextval(
 
 
 --
--- TOC entry 4769 (class 2604 OID 16425)
+-- TOC entry 4771 (class 2604 OID 16425)
 -- Name: category category_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -663,7 +695,7 @@ ALTER TABLE ONLY public.category ALTER COLUMN category_id SET DEFAULT nextval('p
 
 
 --
--- TOC entry 4768 (class 2604 OID 16418)
+-- TOC entry 4770 (class 2604 OID 16418)
 -- Name: genre genre_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -671,7 +703,7 @@ ALTER TABLE ONLY public.genre ALTER COLUMN genre_id SET DEFAULT nextval('public.
 
 
 --
--- TOC entry 4787 (class 2604 OID 24891)
+-- TOC entry 4789 (class 2604 OID 24891)
 -- Name: order_item order_item_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -679,7 +711,7 @@ ALTER TABLE ONLY public.order_item ALTER COLUMN order_item_id SET DEFAULT nextva
 
 
 --
--- TOC entry 4784 (class 2604 OID 24877)
+-- TOC entry 4786 (class 2604 OID 24877)
 -- Name: orders order_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -687,7 +719,7 @@ ALTER TABLE ONLY public.orders ALTER COLUMN order_id SET DEFAULT nextval('public
 
 
 --
--- TOC entry 4776 (class 2604 OID 16565)
+-- TOC entry 4778 (class 2604 OID 16565)
 -- Name: review review_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -695,7 +727,7 @@ ALTER TABLE ONLY public.review ALTER COLUMN review_id SET DEFAULT nextval('publi
 
 
 --
--- TOC entry 4830 (class 2606 OID 41244)
+-- TOC entry 4833 (class 2606 OID 41244)
 -- Name: admin admin_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -704,7 +736,7 @@ ALTER TABLE ONLY public.admin
 
 
 --
--- TOC entry 4797 (class 2606 OID 16436)
+-- TOC entry 4800 (class 2606 OID 16436)
 -- Name: author author_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -713,7 +745,7 @@ ALTER TABLE ONLY public.author
 
 
 --
--- TOC entry 4805 (class 2606 OID 16474)
+-- TOC entry 4808 (class 2606 OID 16474)
 -- Name: book_category book_category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -722,7 +754,7 @@ ALTER TABLE ONLY public.book_category
 
 
 --
--- TOC entry 4801 (class 2606 OID 16457)
+-- TOC entry 4804 (class 2606 OID 16457)
 -- Name: book_genre book_genre_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -731,7 +763,7 @@ ALTER TABLE ONLY public.book_genre
 
 
 --
--- TOC entry 4815 (class 2606 OID 24832)
+-- TOC entry 4818 (class 2606 OID 24832)
 -- Name: book_image book_image_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -740,7 +772,7 @@ ALTER TABLE ONLY public.book_image
 
 
 --
--- TOC entry 4799 (class 2606 OID 16445)
+-- TOC entry 4802 (class 2606 OID 16445)
 -- Name: book book_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -749,7 +781,7 @@ ALTER TABLE ONLY public.book
 
 
 --
--- TOC entry 4824 (class 2606 OID 24872)
+-- TOC entry 4827 (class 2606 OID 24872)
 -- Name: cart_item cart_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -758,7 +790,7 @@ ALTER TABLE ONLY public.cart_item
 
 
 --
--- TOC entry 4820 (class 2606 OID 24861)
+-- TOC entry 4823 (class 2606 OID 24861)
 -- Name: cart cart_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -767,7 +799,7 @@ ALTER TABLE ONLY public.cart
 
 
 --
--- TOC entry 4822 (class 2606 OID 24931)
+-- TOC entry 4825 (class 2606 OID 24931)
 -- Name: cart cart_user_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -776,7 +808,7 @@ ALTER TABLE ONLY public.cart
 
 
 --
--- TOC entry 4818 (class 2606 OID 24852)
+-- TOC entry 4821 (class 2606 OID 24852)
 -- Name: category_genre category_genre_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -785,7 +817,7 @@ ALTER TABLE ONLY public.category_genre
 
 
 --
--- TOC entry 4795 (class 2606 OID 16427)
+-- TOC entry 4798 (class 2606 OID 16427)
 -- Name: category category_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -794,7 +826,7 @@ ALTER TABLE ONLY public.category
 
 
 --
--- TOC entry 4813 (class 2606 OID 24822)
+-- TOC entry 4816 (class 2606 OID 24822)
 -- Name: client client_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -803,7 +835,7 @@ ALTER TABLE ONLY public.client
 
 
 --
--- TOC entry 4793 (class 2606 OID 16420)
+-- TOC entry 4796 (class 2606 OID 16420)
 -- Name: genre genre_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -812,7 +844,7 @@ ALTER TABLE ONLY public.genre
 
 
 --
--- TOC entry 4828 (class 2606 OID 24894)
+-- TOC entry 4831 (class 2606 OID 24894)
 -- Name: order_item order_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -821,7 +853,7 @@ ALTER TABLE ONLY public.order_item
 
 
 --
--- TOC entry 4826 (class 2606 OID 24882)
+-- TOC entry 4829 (class 2606 OID 24882)
 -- Name: orders order_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -830,7 +862,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- TOC entry 4834 (class 2606 OID 49435)
+-- TOC entry 4837 (class 2606 OID 49435)
 -- Name: pickup_point pickup_point_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -839,7 +871,7 @@ ALTER TABLE ONLY public.pickup_point
 
 
 --
--- TOC entry 4809 (class 2606 OID 16570)
+-- TOC entry 4812 (class 2606 OID 16570)
 -- Name: review review_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -848,7 +880,7 @@ ALTER TABLE ONLY public.review
 
 
 --
--- TOC entry 4807 (class 2606 OID 57624)
+-- TOC entry 4810 (class 2606 OID 57624)
 -- Name: book_category uk_book_id_category_id; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -857,7 +889,7 @@ ALTER TABLE ONLY public.book_category
 
 
 --
--- TOC entry 4803 (class 2606 OID 57622)
+-- TOC entry 4806 (class 2606 OID 57622)
 -- Name: book_genre uk_book_id_genre_id; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -866,7 +898,7 @@ ALTER TABLE ONLY public.book_genre
 
 
 --
--- TOC entry 4811 (class 2606 OID 41238)
+-- TOC entry 4814 (class 2606 OID 41238)
 -- Name: review unique_user_book_review; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -875,7 +907,7 @@ ALTER TABLE ONLY public.review
 
 
 --
--- TOC entry 4832 (class 2606 OID 41249)
+-- TOC entry 4835 (class 2606 OID 41249)
 -- Name: admin unique_username; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -884,7 +916,7 @@ ALTER TABLE ONLY public.admin
 
 
 --
--- TOC entry 4816 (class 1259 OID 24839)
+-- TOC entry 4819 (class 1259 OID 24839)
 -- Name: fki_book_image_book_id_fkey; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -892,7 +924,7 @@ CREATE INDEX fki_book_image_book_id_fkey ON public.book_image USING btree (book_
 
 
 --
--- TOC entry 4835 (class 2606 OID 16446)
+-- TOC entry 4838 (class 2606 OID 16446)
 -- Name: book book_author_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -901,7 +933,7 @@ ALTER TABLE ONLY public.book
 
 
 --
--- TOC entry 4838 (class 2606 OID 16475)
+-- TOC entry 4841 (class 2606 OID 16475)
 -- Name: book_category book_category_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -910,7 +942,7 @@ ALTER TABLE ONLY public.book_category
 
 
 --
--- TOC entry 4839 (class 2606 OID 16480)
+-- TOC entry 4842 (class 2606 OID 16480)
 -- Name: book_category book_category_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -919,7 +951,7 @@ ALTER TABLE ONLY public.book_category
 
 
 --
--- TOC entry 4836 (class 2606 OID 16458)
+-- TOC entry 4839 (class 2606 OID 16458)
 -- Name: book_genre book_genre_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -928,7 +960,7 @@ ALTER TABLE ONLY public.book_genre
 
 
 --
--- TOC entry 4837 (class 2606 OID 16463)
+-- TOC entry 4840 (class 2606 OID 16463)
 -- Name: book_genre book_genre_genre_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -937,7 +969,7 @@ ALTER TABLE ONLY public.book_genre
 
 
 --
--- TOC entry 4841 (class 2606 OID 24840)
+-- TOC entry 4845 (class 2606 OID 24840)
 -- Name: book_image book_image_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -946,7 +978,7 @@ ALTER TABLE ONLY public.book_image
 
 
 --
--- TOC entry 4849 (class 2606 OID 49441)
+-- TOC entry 4853 (class 2606 OID 49441)
 -- Name: admin fk_admin_pickup; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -955,7 +987,7 @@ ALTER TABLE ONLY public.admin
 
 
 --
--- TOC entry 4843 (class 2606 OID 24905)
+-- TOC entry 4847 (class 2606 OID 24905)
 -- Name: cart_item fk_cart_item_book; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -964,7 +996,7 @@ ALTER TABLE ONLY public.cart_item
 
 
 --
--- TOC entry 4844 (class 2606 OID 24942)
+-- TOC entry 4848 (class 2606 OID 24942)
 -- Name: cart_item fk_cart_item_cart; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -973,7 +1005,7 @@ ALTER TABLE ONLY public.cart_item
 
 
 --
--- TOC entry 4842 (class 2606 OID 24932)
+-- TOC entry 4846 (class 2606 OID 24932)
 -- Name: cart fk_cart_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -982,7 +1014,7 @@ ALTER TABLE ONLY public.cart
 
 
 --
--- TOC entry 4847 (class 2606 OID 24925)
+-- TOC entry 4851 (class 2606 OID 24925)
 -- Name: order_item fk_order_item_book; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -991,7 +1023,7 @@ ALTER TABLE ONLY public.order_item
 
 
 --
--- TOC entry 4848 (class 2606 OID 24920)
+-- TOC entry 4852 (class 2606 OID 24920)
 -- Name: order_item fk_order_item_order; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1000,7 +1032,7 @@ ALTER TABLE ONLY public.order_item
 
 
 --
--- TOC entry 4845 (class 2606 OID 24910)
+-- TOC entry 4849 (class 2606 OID 24910)
 -- Name: orders fk_order_user; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1009,7 +1041,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- TOC entry 4846 (class 2606 OID 49436)
+-- TOC entry 4850 (class 2606 OID 49436)
 -- Name: orders fk_pickup_point; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1018,7 +1050,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- TOC entry 4840 (class 2606 OID 16576)
+-- TOC entry 4843 (class 2606 OID 16576)
 -- Name: review review_book_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1026,7 +1058,16 @@ ALTER TABLE ONLY public.review
     ADD CONSTRAINT review_book_id_fkey FOREIGN KEY (book_id) REFERENCES public.book(book_id);
 
 
--- Completed on 2026-02-19 18:24:01
+--
+-- TOC entry 4844 (class 2606 OID 57630)
+-- Name: review review_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.review
+    ADD CONSTRAINT review_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.client(client_id);
+
+
+-- Completed on 2026-02-21 16:12:33
 
 --
 -- PostgreSQL database dump complete
