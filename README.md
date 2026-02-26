@@ -17,7 +17,7 @@ Database:
 - Redis (2FA codes for Admin authentication, Admin session management)
 
 Frontend:
-- React (Tailwind CSS, Bootstrap, Context API, Hooks, Fetch API, React Router)
+- React 18(for client), 19(for admin) (Tailwind CSS, Bootstrap, Context API, Hooks, Fetch API, React Router)
 
 ## Structure
 
