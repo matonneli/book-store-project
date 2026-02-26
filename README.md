@@ -24,4 +24,4 @@ Frontend:
 - `admin/` - admin react app.
 - `frontend/` — client react app.
 - `backend/` — backend part of a project(Spring App).
-- `backend/sql` — Database export (full schema and sample data for import).
+- `backend/sql` — Database export (full schema).
