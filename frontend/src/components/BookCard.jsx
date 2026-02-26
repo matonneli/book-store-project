@@ -7,6 +7,8 @@ const BookCard = ({ book, onBookClick }) => {
     const [showPurchaseModal, setShowPurchaseModal] = useState(false);
     const [showRentalModal, setShowRentalModal] = useState(false);
 
+    const isUnavailable = book.status === 'NOT_AVAILABLE' || book.stockQuantity === 0;
+
     const coverImage = book.imageUrls && book.imageUrls.length > 0
         ? book.imageUrls[0]
         : "https://via.placeholder.com/300x450?text=No+Image";
@@ -22,12 +24,12 @@ const BookCard = ({ book, onBookClick }) => {
 
     const handlePurchaseClick = (e) => {
         e.stopPropagation();
-        setShowPurchaseModal(true);
+        if (!isUnavailable) setShowPurchaseModal(true);
     };
 
     const handleRentalClick = (e) => {
         e.stopPropagation();
-        setShowRentalModal(true);
+        if (!isUnavailable) setShowRentalModal(true);
     };
 
     const hasDiscount = book.discountPercent != null && Number(book.discountPercent) > 0;
@@ -35,16 +37,29 @@ const BookCard = ({ book, onBookClick }) => {
     return (
         <>
             <div
-                className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col h-full max-w-md mx-auto cursor-pointer"
+                className={`bg-white rounded-2xl shadow-md overflow-hidden flex flex-col h-full max-w-md mx-auto cursor-pointer transition-shadow duration-300 ${
+                    isUnavailable
+                        ? 'opacity-60 grayscale'
+                        : 'hover:shadow-xl'
+                }`}
                 style={{ fontFamily: "'Montserrat', sans-serif" }}
                 onClick={handleCardClick}
             >
-                <div className="h-72 bg-gray-100 flex items-center justify-center px-4 py-4 group shadow-md group-hover:shadow-xl transition-shadow duration-300 ease-in-out rounded-t-2xl">
+                <div className="relative h-72 bg-gray-100 flex items-center justify-center px-4 py-4 group shadow-md rounded-t-2xl">
                     <img
                         src={coverImage}
                         alt={book.title}
-                        className="max-h-full max-w-full object-contain rounded-md shadow transition-transform duration-300 ease-in-out group-hover:scale-105"
+                        className={`max-h-full max-w-full object-contain rounded-md shadow transition-transform duration-300 ease-in-out ${
+                            !isUnavailable ? 'group-hover:scale-105' : ''
+                        }`}
                     />
+                    {isUnavailable && (
+                        <div className="absolute inset-0 flex items-center justify-center rounded-t-2xl">
+                            <span className="bg-gray-800 bg-opacity-70 text-white text-sm font-semibold px-4 py-1.5 rounded-full tracking-wide">
+                                Out of Stock
+                            </span>
+                        </div>
+                    )}
                 </div>
 
                 <div className="p-4 flex-1 flex flex-col">
@@ -109,11 +124,16 @@ const BookCard = ({ book, onBookClick }) => {
 
                                 return (
                                     <button
-                                        className="flex-1 py-2 rounded-full bg-[#321d4f] text-white font-medium hover:bg-[#241736] transition-colors duration-200 shadow text-xs"
+                                        className={`flex-1 py-2 rounded-full font-medium shadow text-xs transition-colors duration-200 ${
+                                            isUnavailable
+                                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                : 'bg-[#321d4f] text-white hover:bg-[#241736]'
+                                        }`}
                                         style={{ fontFamily: "'Montserrat', sans-serif" }}
                                         onClick={handlePurchaseClick}
+                                        disabled={isUnavailable}
                                     >
-                                        {hasDiscount ? (
+                                        {isUnavailable ? 'Unavailable' : hasDiscount ? (
                                             <div className="flex flex-col">
                                                 <span>Buy {discountedPrice.toFixed(2)} zł</span>
                                                 <span className="line-through text-gray-300 text-xs">
@@ -127,15 +147,20 @@ const BookCard = ({ book, onBookClick }) => {
                                 );
                             })()}
                             <button
-                                className="flex-1 py-2 rounded-full bg-[#ffbdb1] text-gray-800 font-medium hover:bg-[#ff9c8b] transition-colors duration-200 shadow text-xs"
+                                className={`flex-1 py-2 rounded-full font-medium shadow text-xs transition-colors duration-200 ${
+                                    isUnavailable
+                                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                        : 'bg-[#ffbdb1] text-gray-800 hover:bg-[#ff9c8b]'
+                                }`}
                                 style={{ fontFamily: "'Montserrat', sans-serif" }}
                                 onClick={handleRentalClick}
+                                disabled={isUnavailable}
                             >
-                                Rent (from {(book.rentalPrice * 7).toFixed(2)} zł)
+                                {isUnavailable ? 'Unavailable' : `Rent (from ${(book.rentalPrice * 7).toFixed(2)} zł)`}
                             </button>
                         </div>
 
-                        {hasDiscount && (
+                        {hasDiscount && !isUnavailable && (
                             <div className="mt-2 text-center">
                                 <div className="inline-flex items-center bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md transform -rotate-1">
                                     <span className="text-sm mr-1">🔥</span>
@@ -150,18 +175,20 @@ const BookCard = ({ book, onBookClick }) => {
                 </div>
             </div>
 
-            {/* Modals */}
-            <PurchaseModal
-                book={book}
-                isOpen={showPurchaseModal}
-                onClose={() => setShowPurchaseModal(false)}
-            />
-
-            <RentalModal
-                book={book}
-                isOpen={showRentalModal}
-                onClose={() => setShowRentalModal(false)}
-            />
+            {!isUnavailable && (
+                <>
+                    <PurchaseModal
+                        book={book}
+                        isOpen={showPurchaseModal}
+                        onClose={() => setShowPurchaseModal(false)}
+                    />
+                    <RentalModal
+                        book={book}
+                        isOpen={showRentalModal}
+                        onClose={() => setShowRentalModal(false)}
+                    />
+                </>
+            )}
         </>
     );
 };

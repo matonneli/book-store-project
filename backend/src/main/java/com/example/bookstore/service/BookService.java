@@ -129,7 +129,7 @@ public class BookService {
         dto.setPurchasePrice(book.getPurchasePrice());
         dto.setRentalPrice(book.getRentalPrice());
         dto.setStockQuantity(book.getStockQuantity());
-
+        dto.setStatus(book.getStatus());
         List<String> imageUrls = book.getImages().stream()
                 .map(BookImage::getImageUrl)
                 .collect(Collectors.toList());

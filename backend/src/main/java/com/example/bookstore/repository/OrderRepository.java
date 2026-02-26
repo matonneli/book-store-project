@@ -22,13 +22,17 @@ public interface OrderRepository extends JpaRepository<Orders, Integer> {
     Integer countItemsByOrderId(@Param("orderId") Integer orderId);
 
     @Query("""
-    SELECT o, c.email FROM Orders o 
-    JOIN Client c ON o.userId = c.clientId
-    WHERE (:orderId IS NULL OR o.orderId = :orderId)
-    AND (:email IS NULL OR c.email ILIKE %:email%)
-    AND (:status IS NULL OR o.status = :status)
-    AND (:pickupPointId IS NULL OR o.pickupPointId = :pickupPointId)
-    """)
+SELECT o, c.email, p.name, p.address, p.contactPhone, p.workingHours, p.isActive, COUNT(oi)
+FROM Orders o
+JOIN Client c ON o.userId = c.clientId
+LEFT JOIN PickUpPoint p ON p.pickupPointId = o.pickupPointId
+LEFT JOIN OrderItem oi ON oi.orderId = o.orderId
+WHERE (:orderId IS NULL OR o.orderId = :orderId)
+AND (:email IS NULL OR c.email ILIKE %:email%)
+AND (:status IS NULL OR o.status = :status)
+AND (:pickupPointId IS NULL OR o.pickupPointId = :pickupPointId)
+GROUP BY o, c.email, p.name, p.address, p.contactPhone, p.workingHours, p.isActive
+""")
     Page<Object[]> findAllOrdersWithEmailAdmin(
             @Param("orderId") Integer orderId,
             @Param("email") String email,

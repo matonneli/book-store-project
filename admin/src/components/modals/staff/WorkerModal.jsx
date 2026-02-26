@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useReferences } from '../contexts/AdminReferenceContext';
+import { useReferences } from '../../../contexts/AdminReferenceContext';
 
 const WorkerModal = ({ show, onClose, onSubmit, editingWorker, loading }) => {
     const { pickUpPoints } = useReferences();

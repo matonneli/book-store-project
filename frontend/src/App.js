@@ -36,7 +36,6 @@ function App() {
                             <Route path="/payment-mock" element={<PaymentMockPage />} />
                             <Route path="/registration-success" element={<RegistrationSuccessPage />} />
                             <Route path="/logout-success" element={<LogoutSuccessPage />} />
-                            <Route path="/apitest" element={<ApiTest />} />
                             <Route path="/refund-mock" element={<RefundMockPage />} />
                         </Routes>
                     </Router>

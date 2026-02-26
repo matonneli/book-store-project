@@ -11,6 +11,8 @@ const BookDetailsTab = ({ book }) => {
         });
     };
 
+    const isUnavailable = book.status === 'NOT_AVAILABLE' || book.stockQuantity === 0;
+
     return (
         <div className="bg-white p-8 rounded-lg shadow">
             <h2
@@ -64,12 +66,23 @@ const BookDetailsTab = ({ book }) => {
                     >
                         Stock
                     </h4>
-                    <p
-                        className="text-gray-700"
-                        style={{ fontFamily: "'Montserrat', sans-serif" }}
-                    >
-                        {book.stockQuantity} copies available
-                    </p>
+                    {isUnavailable ? (
+                        <span
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold bg-red-50 text-red-600 border border-red-200"
+                            style={{ fontFamily: "'Montserrat', sans-serif" }}
+                        >
+                            <span className="w-2 h-2 rounded-full bg-red-500 inline-block"></span>
+                            Out of stock
+                        </span>
+                    ) : (
+                        <span
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold bg-green-50 text-green-700 border border-green-200"
+                            style={{ fontFamily: "'Montserrat', sans-serif" }}
+                        >
+                            <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
+                            {book.stockQuantity} {book.stockQuantity === 1 ? 'copy' : 'copies'} available
+                        </span>
+                    )}
                 </div>
             </div>
 

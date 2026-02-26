@@ -24,7 +24,7 @@ export const AnalyticsProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     const fetchOverall = useCallback(async () => {
-        if (overallData) return; // cache — don't refetch on tab switch
+        if (overallData) return;
         setLoadingOverall(true);
         setError(null);
         try {

@@ -1,17 +1,17 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap';
-import { useToast } from './ToastSystem';
-import { useReferences } from '../contexts/AdminReferenceContext';
-import { useBookAdmin } from '../contexts/BookAdminContext';
+import { useToast } from '../../shared/ToastSystem';
+import { useReferences } from '../../../contexts/AdminReferenceContext';
+import { useBookAdmin } from '../../../contexts/BookAdminContext';
 
 const API_BASE_URL = 'http://localhost:8081';
 
-const AddBookModal = ({ show, onClose, onBookAdded }) => {
+const EditBookModal = ({ bookId, show, onClose, onBookUpdated }) => {
     const toast = useToast();
     const { authors, allCategories, allGenres, tree } = useReferences();
     const { fetchBooks } = useBookAdmin();
 
-    const [loading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});
@@ -35,7 +35,7 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
         const categoryIdsInTree = new Set(tree.map(item => item.categoryId));
         const categoriesWithGenres = tree.map(item => ({
             categoryId: item.categoryId,
-            categoryName: item.categoryName || item.name,
+            categoryName: item.categoryName,
             genres: item.genres || []
         }));
 
@@ -48,6 +48,49 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
             standaloneCategories
         };
     }, [tree, allCategories]);
+
+    useEffect(() => {
+        if (show && bookId) {
+            fetchBookData();
+        }
+    }, [show, bookId]);
+
+    const fetchBookData = async () => {
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/admin/books/${bookId}/edit`, {
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch book data');
+            }
+
+            const book = await response.json();
+
+            setFormData({
+                title: book.title || '',
+                authorId: book.authorId || '',
+                publicationDate: book.publicationDate ? book.publicationDate.split('T')[0] : '',
+                description: book.description || '',
+                purchasePrice: book.purchasePrice || '',
+                rentalPrice: book.rentalPrice || '',
+                discountPercent: book.discountPercent || '',
+                stockQuantity: book.stockQuantity || '',
+                status: book.status || 'AVAILABLE',
+                imageUrl: (book.imageUrls && book.imageUrls.length > 0) ? book.imageUrls[0] : '',
+                genreIds: book.genreIds || [],
+                categoryIds: book.categoryIds || [],
+            });
+        } catch (err) {
+            setError(err.message);
+            toast.error('Failed to load book: ' + err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value, type } = e.target;
@@ -173,7 +216,6 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
         }
 
         setSaving(true);
-        setError(null);
 
         try {
             const payload = {
@@ -193,8 +235,8 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
                 categoryIds: formData.categoryIds,
             };
 
-            const response = await fetch(`${API_BASE_URL}/api/admin/books`, {
-                method: 'POST',
+            const response = await fetch(`${API_BASE_URL}/api/admin/books/${bookId}`, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -203,31 +245,33 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
             });
 
             if (!response.ok) {
-                let errorMessage = 'Failed to create book';
+                let errorMessage = 'Failed to update book';
                 try {
                     const errorData = await response.json();
                     errorMessage = errorData.message || errorMessage;
                 } catch {
+
                 }
+
                 if (response.status === 401) {
                     errorMessage = 'Session expired. Please login again.';
                 }
+
                 throw new Error(errorMessage);
             }
 
+            const updatedBook = await response.json();
+
             await fetchBooks();
 
-            toast.success('Book created successfully');
-
-            if (onBookAdded) {
-                onBookAdded();
+            if (onBookUpdated) {
+                onBookUpdated(updatedBook);
             }
 
             handleClose();
 
         } catch (err) {
-            setError(err.message);
-            toast.error('Creation failed: ' + err.message);
+            toast.error('Update failed: ' + err.message);
         } finally {
             setSaving(false);
         }
@@ -256,7 +300,7 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
     return (
         <Modal show={show} onHide={handleClose} size="xl" centered scrollable>
             <Modal.Header closeButton>
-                <Modal.Title>Add New Book</Modal.Title>
+                <Modal.Title>Edit Book #{bookId}</Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
@@ -266,7 +310,7 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
                         <p className="mt-2">Loading book data...</p>
                     </div>
                 ) : error ? (
-                    <Alert variant="danger" className="mb-4">{error}</Alert>
+                    <Alert variant="danger">{error}</Alert>
                 ) : (
                     <Form>
                         <div className="border rounded p-3 mb-4 bg-light">
@@ -433,7 +477,7 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
                                         <Form.Label>Availability Status</Form.Label>
                                         <Form.Check
                                             type="switch"
-                                            id="status-switch-add"
+                                            id="status-switch"
                                             label={formData.status === 'AVAILABLE' ? 'Available' : 'Not Available'}
                                             checked={formData.status === 'AVAILABLE'}
                                             onChange={(e) => setFormData(prev => ({
@@ -445,25 +489,6 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
                                     </Form.Group>
                                 </div>
                             </div>
-
-                            {formData.imageUrl && (
-                                <div className="mt-3">
-                                    <Form.Label>Image Preview</Form.Label>
-                                    <div
-                                        className="border rounded bg-light d-flex align-items-center justify-content-center"
-                                        style={{ width: '160px', height: '220px', overflow: 'hidden' }}
-                                    >
-                                        <img
-                                            src={formData.imageUrl}
-                                            alt="Preview"
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            onError={e => {
-                                                e.target.src = 'https://via.placeholder.com/160x220?text=Image+not+found';
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
                         <div className="border rounded p-3 mb-0 bg-light">
@@ -540,20 +565,20 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
             </Modal.Body>
 
             <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose} disabled={saving}>
+                <Button variant="secondary" onClick={handleClose}>
                     Cancel
                 </Button>
                 <Button
                     variant="primary"
                     onClick={handleSave}
-                    disabled={saving || loading}
+                    disabled={loading || saving}
                 >
                     {saving ? (
                         <>
-                            <Spinner as="span" animation="border" size="sm" /> Creating...
+                            <Spinner as="span" animation="border" size="sm" /> Saving...
                         </>
                     ) : (
-                        'Create Book'
+                        'Save Changes'
                     )}
                 </Button>
             </Modal.Footer>
@@ -561,4 +586,4 @@ const AddBookModal = ({ show, onClose, onBookAdded }) => {
     );
 };
 
-export default AddBookModal;
+export default EditBookModal;

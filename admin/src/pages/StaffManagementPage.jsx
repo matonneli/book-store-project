@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useWorkers } from '../contexts/WorkerContext';
 import { useReferences } from '../contexts/AdminReferenceContext';
-import WorkerModal from '../components/WorkerModal';
-import InactivityTimer from '../components/InactivityTimer';
+import WorkerModal from '../components/modals/staff/WorkerModal';
+import InactivityTimer from '../components/shared/InactivityTimer';
 import bookabeLogo from '../assets/images/bookabe-logo.png';
 
 const StaffManagementPage = () => {

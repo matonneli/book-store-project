@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { AnalyticsProvider } from '../contexts/AnalyticsContext';
-import InactivityTimer from '../components/InactivityTimer';
+import InactivityTimer from '../components/shared/InactivityTimer';
 import OverallView from '../components/views/analytics/OverallView';
 import PeriodView from '../components/views/analytics/PeriodView';
 import PickupPointView from '../components/views/analytics/PickupPointView';

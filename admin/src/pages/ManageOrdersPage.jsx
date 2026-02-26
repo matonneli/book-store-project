@@ -1,11 +1,11 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useReferences } from '../contexts/AdminReferenceContext';
-import { ToastProvider } from '../components/ToastSystem';
-import InactivityTimer from '../components/InactivityTimer';
+import { ToastProvider } from '../components/shared/ToastSystem';
+import InactivityTimer from '../components/shared/InactivityTimer';
 
-import AdminOrdersView from '../components/AdminOrdersView';
-import WorkerOrdersView from '../components/WorkerOrdersView';
+import AdminOrdersView from '../components/views/orders/AdminOrdersView';
+import WorkerOrdersView from '../components/views/orders/WorkerOrdersView';
 
 const ManageOrdersPageContent = () => {
     const { userInfo, isLoading, updateLastActivity } = useAuth();

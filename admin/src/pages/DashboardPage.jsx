@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import InactivityTimer from '../components/InactivityTimer';
+import InactivityTimer from '../components/shared/InactivityTimer';
 import bookabeLogo from '../assets/images/bookabe-logo.png';
 
 const DashboardPage = () => {

@@ -109,10 +109,10 @@ const PickupPointView = () => {
                 <>
                     <SectionTitle>Key Metrics — {d.pickupPointName}</SectionTitle>
                     <div className="row mb-4">
-                        <KpiCard label="Total Orders"    value={d.totalOrders}             icon="📦" variant="primary" />
-                        <KpiCard label="Total Revenue"   value={fmtZl(d.totalRevenue)}     icon="💰" variant="success" />
-                        <KpiCard label="Total Refunds"   value={fmtZl(d.totalRefunds)}     icon="↩️" variant="danger" />
-                        <KpiCard label="Avg Order Value" value={fmtZl(d.avgOrderValue)}    icon="🧾" variant="info" />
+                        <KpiCard label="Total Orders"    value={d.totalOrders}             icon="" variant="primary" />
+                        <KpiCard label="Total Revenue"   value={fmtZl(d.totalRevenue)}     icon="" variant="success" />
+                        <KpiCard label="Total Refunds"   value={fmtZl(d.totalRefunds)}     icon="️" variant="danger" />
+                        <KpiCard label="Avg Order Value" value={fmtZl(d.avgOrderValue)}    icon="" variant="info" />
                     </div>
                     <div className="row mb-4">
                         <div className="col-md-3 col-sm-6 mb-3">

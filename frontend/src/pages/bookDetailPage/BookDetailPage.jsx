@@ -148,6 +148,7 @@ const BookDetailPage = () => {
         : "https://via.placeholder.com/300x450?text=No+Image";
 
     const hasDiscount = book.discountPercent != null && Number(book.discountPercent) > 0;
+    const isUnavailable = book.status === 'NOT_AVAILABLE' || book.stockQuantity === 0;
 
     return (
         <CartProvider>
@@ -260,6 +261,16 @@ const BookDetailPage = () => {
                                         </p>
                                     </div>
 
+                                    {/* Out of stock badge */}
+                                    {isUnavailable && (
+                                        <div className="mb-4 flex items-center justify-center gap-2 bg-gray-100 border border-gray-300 text-gray-600 text-sm font-semibold px-4 py-2.5 rounded-xl"
+                                             style={{ fontFamily: "'Montserrat', sans-serif" }}
+                                        >
+                                            <span className="text-base">📭</span>
+                                            <span>Currently out of stock</span>
+                                        </div>
+                                    )}
+
                                     <div className="space-y-3">
                                         {(() => {
                                             const originalPrice = book.purchasePrice;
@@ -269,11 +280,16 @@ const BookDetailPage = () => {
 
                                             return (
                                                 <button
-                                                    onClick={() => setShowPurchaseModal(true)}
-                                                    className="w-full py-3 rounded-full bg-[#321d4f] text-white font-medium hover:bg-[#241736] transition-colors duration-200 shadow"
+                                                    onClick={() => !isUnavailable && setShowPurchaseModal(true)}
+                                                    disabled={isUnavailable}
+                                                    className={`w-full py-3 rounded-full font-medium transition-colors duration-200 shadow ${
+                                                        isUnavailable
+                                                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                                            : 'bg-[#321d4f] text-white hover:bg-[#241736]'
+                                                    }`}
                                                     style={{ fontFamily: "'Montserrat', sans-serif" }}
                                                 >
-                                                    {hasDiscount ? (
+                                                    {isUnavailable ? 'Unavailable' : hasDiscount ? (
                                                         <span>
                                                             Buy {discountedPrice.toFixed(2)} zł
                                                             <span className="line-through text-gray-300 ml-2 text-sm">
@@ -287,15 +303,20 @@ const BookDetailPage = () => {
                                             );
                                         })()}
                                         <button
-                                            onClick={() => setShowRentalModal(true)}
-                                            className="w-full py-3 rounded-full bg-[#ffbdb1] text-gray-800 font-medium hover:bg-[#ff9c8b] transition-colors duration-200 shadow"
+                                            onClick={() => !isUnavailable && setShowRentalModal(true)}
+                                            disabled={isUnavailable}
+                                            className={`w-full py-3 rounded-full font-medium transition-colors duration-200 shadow ${
+                                                isUnavailable
+                                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                                    : 'bg-[#ffbdb1] text-gray-800 hover:bg-[#ff9c8b]'
+                                            }`}
                                             style={{ fontFamily: "'Montserrat', sans-serif" }}
                                         >
-                                            Rent (from {(book.rentalPrice * 7).toFixed(2)} zł)
+                                            {isUnavailable ? 'Unavailable' : `Rent (from ${(book.rentalPrice * 7).toFixed(2)} zł)`}
                                         </button>
                                     </div>
 
-                                    {hasDiscount && (
+                                    {hasDiscount && !isUnavailable && (
                                         <div className="mt-4 text-center">
                                             <div className="inline-flex items-center bg-gradient-to-r from-red-500 to-pink-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg transform -rotate-2">
                                                 <span className="text-lg mr-1">🔥</span>
@@ -311,16 +332,20 @@ const BookDetailPage = () => {
                         </div>
                     </div>
 
-                    <PurchaseModal
-                        book={book}
-                        isOpen={showPurchaseModal}
-                        onClose={() => setShowPurchaseModal(false)}
-                    />
-                    <RentalModal
-                        book={book}
-                        isOpen={showRentalModal}
-                        onClose={() => setShowRentalModal(false)}
-                    />
+                    {!isUnavailable && (
+                        <>
+                            <PurchaseModal
+                                book={book}
+                                isOpen={showPurchaseModal}
+                                onClose={() => setShowPurchaseModal(false)}
+                            />
+                            <RentalModal
+                                book={book}
+                                isOpen={showRentalModal}
+                                onClose={() => setShowRentalModal(false)}
+                            />
+                        </>
+                    )}
                 </div>
             </ToastProvider>
         </CartProvider>

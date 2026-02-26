@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useBookAdmin } from '../contexts/BookAdminContext';
 import { useReferences } from '../contexts/AdminReferenceContext';
-import AddBookModal from "../components/AddBookModal";
-import EditBookModal from '../components/EditBookModal';
-import AddAuthorModal from '../components/AddAuthorModal';
-import EditAuthorModal from '../components/EditAuthorModal';
-import InactivityTimer from '../components/InactivityTimer';
-import { ToastProvider, useToast } from '../components/ToastSystem';
+import AddBookModal from "../components/modals/catalog/AddBookModal";
+import EditBookModal from '../components/modals/catalog/EditBookModal';
+import AddAuthorModal from '../components/modals/catalog/AddAuthorModal';
+import EditAuthorModal from '../components/modals/catalog/EditAuthorModal';
+import InactivityTimer from '../components/shared/InactivityTimer';
+import { ToastProvider, useToast } from '../components/shared/ToastSystem';
 
 const BookRow = React.memo(({ book, onEdit }) => {
     const { getAuthorName, getCategoryNames, getGenreNames } = useReferences();

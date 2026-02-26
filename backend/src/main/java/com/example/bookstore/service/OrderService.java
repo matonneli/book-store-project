@@ -266,7 +266,14 @@ public class OrderService {
         return ordersPage.map(result -> {
             Orders order = (Orders) result[0];
             String userEmail = (String) result[1];
-            return mapToAdminSummaryDto(order, userEmail);
+            String pickupName = (String) result[2];
+            String pickupAddress = (String) result[3];
+            String pickupPhone = (String) result[4];
+            String pickupHours = (String) result[5];
+            Boolean pickupActive = (Boolean) result[6];
+            Long itemCount = (Long) result[7];
+            return mapToAdminSummaryDto(order, userEmail, pickupName, pickupAddress,
+                    pickupPhone, pickupHours, pickupActive, itemCount);
         });
     }
 
@@ -310,7 +317,12 @@ public class OrderService {
         return dto;
     }
 
-    private OrderAdminSummaryDto mapToAdminSummaryDto(Orders order, String userEmail) {
+    private OrderAdminSummaryDto mapToAdminSummaryDto(
+            Orders order, String userEmail,
+            String pickupName, String pickupAddress,
+            String pickupPhone, String pickupHours,
+            Boolean pickupActive, Long itemCount) {
+
         OrderAdminSummaryDto dto = new OrderAdminSummaryDto();
         dto.setOrderId(order.getOrderId());
         dto.setStatus(order.getStatus());
@@ -321,12 +333,20 @@ public class OrderService {
         dto.setTotalPrice(order.getTotalPrice());
         dto.setUserId(order.getUserId());
         dto.setEmail(userEmail);
-        if (order.getPickUpPoint() != null) {
-            pickUpPointRepository.findById(order.getPickUpPoint())
-                    .ifPresent(p -> dto.setPickUpPoint(pickUpPointService.mapToDto(p)));
+        dto.setItemCount(itemCount != null ? itemCount.intValue() : 0);
+
+        if (pickupName != null) {
+            PickUpPointDto ppDto = new PickUpPointDto(
+                    order.getPickUpPoint(),
+                    pickupName,
+                    pickupAddress,
+                    pickupPhone,
+                    pickupHours,
+                    pickupActive
+            );
+            dto.setPickUpPoint(ppDto);
         }
 
-        dto.setItemCount(orderRepository.countItemsByOrderId(order.getOrderId()));
         return dto;
     }
 

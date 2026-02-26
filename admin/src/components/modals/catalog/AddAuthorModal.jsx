@@ -1,8 +1,7 @@
-// src/components/AddAuthorModal.jsx
 import React, { useState } from 'react';
 import { Modal, Button, Form, Spinner, Alert } from 'react-bootstrap';
-import { useToast } from './ToastSystem';
-import { useReferences } from '../contexts/AdminReferenceContext';
+import { useToast } from '../../shared/ToastSystem';
+import { useReferences } from '../../../contexts/AdminReferenceContext';
 
 const API_BASE_URL = 'http://localhost:8081';
 

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ProtectedRoute = React.memo(({ children }) => {
     const { isAuthenticated, isLoading, updateLastActivity } = useAuth();

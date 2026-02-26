@@ -14,6 +14,7 @@ public class BookDto {
     private Double purchasePrice;
     private Double rentalPrice;
     private Integer stockQuantity;
+    private String status;
     private List<String> imageUrls = new ArrayList<>();
     private List<String> genres = new ArrayList<>();
     private List<String> categories = new ArrayList<>();
@@ -82,6 +83,15 @@ public class BookDto {
     public void setStockQuantity(Integer stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 
     public List<String> getImageUrls() {
         return imageUrls;

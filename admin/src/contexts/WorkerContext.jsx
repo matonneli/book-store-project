@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { useToast } from '../components/ToastSystem';
+import { useToast } from '../components/shared/ToastSystem';
 
 const WorkerContext = createContext();
 

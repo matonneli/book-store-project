@@ -34,3 +34,4 @@ build/
 
 # Configuration files with sensitive data
 /src/main/resources/application-local.properties
+src/test/resources/application-test.properties
